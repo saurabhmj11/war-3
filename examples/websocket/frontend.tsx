@@ -97,7 +97,7 @@ export default function SocketDemo() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       sendMessage();
     }
@@ -171,6 +171,12 @@ export default function SocketDemo() {
                   )}
                 </div>
               </ScrollArea>
+
+              {users.length > 0 && (
+                <div className="text-xs text-gray-500">
+                  Online: {users.map(u => u.username).join(', ')}
+                </div>
+              )}
 
               <div className="flex space-x-2">
                 <Input
