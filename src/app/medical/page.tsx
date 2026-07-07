@@ -26,7 +26,7 @@ export default function MedicalDashboardPage() {
           persona="PERSONA 5 • DR. ARIS THORNE • PARAMEDIC FIRST-AID LEAD"
           badge="MED-STATION-1"
           title="Medical Triage & Stretcher Routing"
-          description="Real-time emergency triage queue with Gemini Vision injury classification and step-free WCAG AA elevator extraction routing."
+          description="Real-time emergency triage queue with GLM Vision injury classification and step-free WCAG AA elevator extraction routing."
           icon={HeartPulse}
           kit="purple"
           number="07"

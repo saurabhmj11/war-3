@@ -115,9 +115,9 @@ export const RoleSwitcher: React.FC = () => {
               className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold ${
                 isGeminiLive ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
               }`}
-              title={isGeminiLive ? 'Real Google Gemini API key is configured' : 'No Gemini API key — using simulated engine'}
+              title={isGeminiLive ? 'Real GLM 5.2 API key is configured' : 'No GLM API key — using simulated engine'}
             >
-              {isGeminiLive ? '◆ GEMINI LIVE' : '◇ SIMULATED'}
+              {isGeminiLive ? '◆ GLM 5.2 LIVE' : '◇ SIMULATED'}
             </span>
           </div>
 

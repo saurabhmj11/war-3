@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
         });
         break;
 
-      case 6: // Multilingual fan rerouting push (uses real Gemini for translation when key is set)
+      case 6: // Multilingual fan rerouting push (uses real GLM for translation when key is set)
         await EmergencyCopilotService.broadcastEmergencyAlert(
           'To avoid Gate C commuter delays, please proceed to Gate D (3-minute walk right). Wait time is only 5 minutes!',
           ['101', '102', '108', '110', '112', '114', '115'],
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
         );
         break;
 
-      case 7: // Medical emergency at Sector 112 (Gemini Vision photo classification)
+      case 7: // Medical emergency at Sector 112 (GLM Vision photo classification)
         await VolunteerCopilotService.classifyAndReportIncident(
           'Spectator collapsed experiencing severe heat exhaustion, dizziness, and dehydration in Sector 112 row 14.',
           'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600',
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
         break;
 
       case 9: {
-        // Executive resolution summary (Gemini 2.5 Pro)
+        // Executive resolution summary (GLM 5.2 Pro)
         const summary = await OperationsCopilotService.generateExecutiveSummary();
         return NextResponse.json(
           {

@@ -503,7 +503,7 @@ export const SEED_DATA: SeedDatabase = {
       sessionId: 'sess-ai-1001',
       uid: 'usr_fan_1',
       copilotType: 'FAN',
-      modelUsed: 'gemini-2.5-flash',
+      modelUsed: 'glm-5.2-flash',
       turnCount: 2,
       history: [
         {

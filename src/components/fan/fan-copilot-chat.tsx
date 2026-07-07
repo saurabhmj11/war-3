@@ -93,9 +93,9 @@ export const FanCopilotChat: React.FC<FanCopilotChatProps> = ({ onNavigateReques
                     ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                     : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                 }`}
-                title={isGeminiLive ? 'Real Google Gemini API key configured' : 'No Gemini API key — using simulated engine'}
+                title={isGeminiLive ? 'Real GLM 5.2 API key configured' : 'No GLM API key — using simulated engine'}
               >
-                {isGeminiLive ? '◆ GEMINI FLASH' : '◇ SIMULATED'}
+                {isGeminiLive ? '◆ GLM 5.2 FLASH' : '◇ SIMULATED'}
               </span>
             </h3>
             <p className="text-xs text-emerald-100/60">Multilingual AI partner • 8 World Cup languages</p>
@@ -153,7 +153,7 @@ export const FanCopilotChat: React.FC<FanCopilotChatProps> = ({ onNavigateReques
             </div>
             <div className="p-3 rounded-md bg-[#03110a]/90 border border-emerald-900/50 text-emerald-100/60 text-xs flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400 live-pulse" aria-hidden="true" />
-              <span>Gemini is reasoning across live stadium telemetry…</span>
+              <span>GLM is reasoning across live stadium telemetry…</span>
             </div>
           </div>
         )}
@@ -219,7 +219,7 @@ export const FanCopilotChat: React.FC<FanCopilotChatProps> = ({ onNavigateReques
         <div className="text-[10px] text-emerald-100/40 text-center mt-2 font-mono relative z-10" aria-live="polite">
           Last response:{' '}
           <span className={lastEngine === 'gemini' ? 'text-emerald-400' : 'text-amber-400'}>
-            {lastEngine === 'gemini' ? '◆ Real Google Gemini API' : '◇ Simulated fallback engine'}
+            {lastEngine === 'gemini' ? '◆ Real GLM 5.2 API' : '◇ Simulated fallback engine'}
           </span>
         </div>
       )}

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 /**
  * POST /api/security/broadcast  { summaryEn, targetSectors[], priority }
  *
- * Generates an 8-language PA broadcast via Gemini (or fallback) and dispatches it.
+ * Generates an 8-language PA broadcast via GLM (or fallback) and dispatches it.
  */
 export async function POST(req: NextRequest) {
   try {

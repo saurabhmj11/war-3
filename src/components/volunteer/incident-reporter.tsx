@@ -112,7 +112,7 @@ export const IncidentReporter: React.FC = () => {
               <div>
                 <h3 className="jersey-heading text-base font-black text-white flex items-center gap-2">
                   <span>Multimodal Incident Reporter</span>
-                  <span className="text-[10px] bg-sky-500/20 text-sky-300 border border-sky-500/40 px-2 py-0.5 rounded-md font-mono font-bold">GEMINI VISION</span>
+                  <span className="text-[10px] bg-sky-500/20 text-sky-300 border border-sky-500/40 px-2 py-0.5 rounded-md font-mono font-bold">GLM VISION</span>
                 </h3>
                 <p className="text-xs text-emerald-100/60">Snap photos or record voice notes; AI auto-grades severity &amp; routes triage</p>
               </div>
@@ -226,7 +226,7 @@ export const IncidentReporter: React.FC = () => {
               <div className="flex items-center justify-between border-b border-sky-500/30 pb-2">
                 <div className="flex items-center gap-2 text-xs font-black text-sky-300 jersey-heading">
                   <Sparkles className="w-4 h-4 text-sky-400 animate-spin" style={{ animationDuration: '6s' }} aria-hidden="true" />
-                  <span>{lastClassification.engine === 'gemini' ? 'GEMINI VISION' : 'SIMULATED'} CLASSIFICATION</span>
+                  <span>{lastClassification.engine === 'gemini' ? 'GLM VISION' : 'SIMULATED'} CLASSIFICATION</span>
                 </div>
                 <span className={`text-[10px] font-mono font-black px-2 py-0.5 rounded-md border tracking-widest uppercase ${getSeverityBadge(lastClassification.estimatedSeverity).bg}`}>
                   {getSeverityBadge(lastClassification.estimatedSeverity).label}

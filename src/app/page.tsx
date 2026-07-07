@@ -38,11 +38,11 @@ const ROLE_CARDS = [
     number: '06',
     title: 'Volunteer Triage',
     subtitle: 'Elena • Concourse B Ground Staff',
-    description: 'GPS-prioritized task checklist, multimodal AI incident photo classification (Gemini Vision), and voice note transcription.',
+    description: 'GPS-prioritized task checklist, multimodal AI incident photo classification (GLM Vision), and voice note transcription.',
     href: '/volunteer',
     icon: Sparkles,
     kit: 'sky' as const,
-    badge: 'GEMINI VISION',
+    badge: 'GLM VISION',
   },
   {
     role: 'OPERATIONS' as const,
@@ -53,7 +53,7 @@ const ROLE_CARDS = [
     href: '/operations',
     icon: LayoutDashboard,
     kit: 'amber' as const,
-    badge: 'GEMINI 2.5 PRO',
+    badge: 'GLM 5.2 PRO',
   },
   {
     role: 'SECURITY' as const,
@@ -154,7 +154,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-base sm:text-lg text-emerald-50/80 max-w-2xl font-normal leading-relaxed">
-            An enterprise-grade, cloud-native SaaS platform powered by <span className="text-white font-bold">Google Gemini 2.5</span>. Predictive crowd control, 8-language real-time translation, and multimodal emergency coordination across MetLife Stadium.
+            An enterprise-grade, cloud-native SaaS platform powered by <span className="text-white font-bold">Zhipu GLM 5.2</span>. Predictive crowd control, 8-language real-time translation, and multimodal emergency coordination across MetLife Stadium.
           </p>
 
           {/* Engine status pill */}
@@ -167,7 +167,7 @@ export default function HomePage() {
               }`}
             >
               <Cpu className="w-3.5 h-3.5" aria-hidden="true" />
-              {isGeminiLive ? 'Live Google Gemini API connected' : 'Simulated engine (set GOOGLE_GENAI_API_KEY for live Gemini)'}
+              {isGeminiLive ? 'Live GLM 5.2 API connected' : 'Simulated engine (set ZAI_DISABLED=0 for live GLM)'}
             </span>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-[#0a1f15]/90 border border-emerald-900/60 text-emerald-200">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 live-pulse" aria-hidden="true" />
@@ -231,7 +231,7 @@ export default function HomePage() {
           9-Step Match-Day <span className="pitch-text">Storyline Simulator</span>
         </h2>
         <p className="text-sm text-emerald-50/70 max-w-2xl">
-          Test our dual-mode Gemini adapter live. Trigger simulated turnstile bottlenecks, AI What-If rerouting, volunteer task
+          Test our dual-mode GLM 5.2 adapter live. Trigger simulated turnstile bottlenecks, AI What-If rerouting, volunteer task
           dispatch, and 8-language emergency coordination. All state changes sync across every connected browser tab via SSE.
         </p>
         <DemoCommandCenter />
@@ -354,14 +354,14 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 relative z-10">
             {[
-              { color: 'text-emerald-400', title: 'Real Gemini Integration', body: 'Five copilot operations route through @google/genai when an API key is set, with deterministic fallback if the call fails or times out (>3s).' },
+              { color: 'text-emerald-400', title: 'Real GLM 5.2 Integration', body: 'Five copilot operations route through z-ai-web-dev-sdk (GLM 5.2) by default, with deterministic fallback if the call fails or times out (>3s).' },
               { color: 'text-teal-400', title: 'What-If Sandbox', body: 'Evaluates complex operational interventions across live stadium telemetry without risking live fan safety.' },
               { color: 'text-cyan-400', title: 'WCAG 2.2 AA', body: 'Full keyboard nav, ARIA landmarks, screen-reader labels, skip link, and dedicated step-free elevator/ramp routing.' },
               { color: 'text-purple-400', title: 'Deterministic Safety', body: 'Life-critical evacuation overrides bypass LLM generation entirely to guarantee zero latency and zero hallucination.' },
               { color: 'text-amber-400', title: 'Server-Side RBAC', body: 'HMAC-signed role tokens verified on every mutating API call. Unauthorized roles get 403 — server is the source of truth.' },
               { color: 'text-rose-400', title: 'Real-Time Cross-Tab Sync', body: 'Server-Sent Events stream pushes state changes to every connected dashboard. One role action is instantly visible on all others.' },
-              { color: 'text-sky-400', title: 'Multimodal Photo Triage', body: 'Volunteer incident reporter sends actual photo URLs to Gemini Vision for severity grading and structured JSON classification.' },
-              { color: 'text-fuchsia-400', title: 'Auditable AI Decisions', body: 'Every Gemini call is logged with engine name, actor uid, and structured response — full traceability.' },
+              { color: 'text-sky-400', title: 'Multimodal Photo Triage', body: 'Volunteer incident reporter sends actual photo URLs to GLM Vision for severity grading and structured JSON classification.' },
+              { color: 'text-fuchsia-400', title: 'Auditable AI Decisions', body: 'Every GLM call is logged with engine name, actor uid, and structured response — full traceability.' },
             ].map((item) => (
               <div key={item.title} className="bg-[#03110a]/80 p-5 rounded-lg border border-emerald-900/40 space-y-2 hover:border-emerald-700/60 transition-colors">
                 <CheckCircle2 className={`w-5 h-5 ${item.color}`} aria-hidden="true" />

@@ -14,7 +14,7 @@ export default function VolunteerDashboardPage() {
           persona="PERSONA 2 • ELENA ROSTOVA • CONCOURSE B GROUND STAFF"
           badge="VOL-881"
           title="Volunteer Checklist & Incident Triage"
-          description="Manage your shift tasks and submit multimodal safety reports. Gemini Vision automatically classifies photo severity and dispatches medical or security teams."
+          description="Manage your shift tasks and submit multimodal safety reports. GLM Vision automatically classifies photo severity and dispatches medical or security teams."
           icon={Sparkles}
           kit="sky"
           number="06"

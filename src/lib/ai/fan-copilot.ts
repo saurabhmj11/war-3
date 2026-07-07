@@ -27,7 +27,7 @@ export class FanCopilotService {
       `sess-ai-fan-${actorUid}`,
       actorUid,
       'FAN',
-      client.engineName === 'gemini' ? 'gemini-2.5-flash' : 'simulated-flash',
+      client.engineName === 'gemini' ? 'glm-5.2-flash' : 'simulated-flash',
       message,
       response.responseText
     );

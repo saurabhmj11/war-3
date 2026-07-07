@@ -19,10 +19,10 @@ import {
 } from 'lucide-react';
 
 const PROMPT_GOVERNANCE = [
-  { copilot: '1. Fan Navigation & Concessions', model: 'gemini-2.5-flash', version: 'v2.4.1 (Stable)', tokensAvg: '380 in / 140 out', caching: '75% Context Cache Savings', status: 'ACTIVE' },
-  { copilot: '2. Volunteer Incident Classifier', model: 'gemini-2.5-flash / Vision', version: 'v2.1.0 (Multimodal)', tokensAvg: '1,200 in / 280 out', caching: '60% Context Cache Savings', status: 'ACTIVE' },
-  { copilot: '3. Operations What-If Sandbox', model: 'gemini-2.5-pro', version: 'v3.0.0 (Reasoning)', tokensAvg: '3,400 in / 850 out', caching: '45% Schema Pruning', status: 'ACTIVE' },
-  { copilot: '4. Multilingual Emergency Coordinator', model: 'gemini-2.5-flash', version: 'v1.8.0 (8-Lang PA)', tokensAvg: '620 in / 490 out', caching: '80% Static Schematic Cache', status: 'ACTIVE' },
+  { copilot: '1. Fan Navigation & Concessions', model: 'glm-5.2-flash', version: 'v2.4.1 (Stable)', tokensAvg: '380 in / 140 out', caching: '75% Context Cache Savings', status: 'ACTIVE' },
+  { copilot: '2. Volunteer Incident Classifier', model: 'glm-4.5v (Vision)', version: 'v2.1.0 (Multimodal)', tokensAvg: '1,200 in / 280 out', caching: '60% Context Cache Savings', status: 'ACTIVE' },
+  { copilot: '3. Operations What-If Sandbox', model: 'glm-5.2-pro (thinking)', version: 'v3.0.0 (Reasoning)', tokensAvg: '3,400 in / 850 out', caching: '45% Schema Pruning', status: 'ACTIVE' },
+  { copilot: '4. Multilingual Emergency Coordinator', model: 'glm-5.2-flash', version: 'v1.8.0 (8-Lang PA)', tokensAvg: '620 in / 490 out', caching: '80% Static Schematic Cache', status: 'ACTIVE' },
 ];
 
 export default function AdminDashboardPage() {
@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
         <PageHeader
           persona="PERSONA 6 • DAVID KIM • CLOUD INFRASTRUCTURE & AI LEAD"
-          badge={isGeminiLive ? 'GEMINI LIVE' : 'SIMULATED'}
+          badge={isGeminiLive ? 'GLM 5.2 LIVE' : 'SIMULATED'}
           title="System Admin & Cloud Observability"
           description="Enterprise observability across analytics, prompt governance, RBAC security policies, and audit logs."
           icon={Lock}
@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
               <thead>
                 <tr className="border-b border-emerald-900/50 text-[11px] font-black uppercase tracking-widest text-emerald-100/60 font-mono">
                   <th scope="col" className="py-3 px-4">AI Copilot Service</th>
-                  <th scope="col" className="py-3 px-4">Assigned Gemini Model</th>
+                  <th scope="col" className="py-3 px-4">Assigned GLM Model</th>
                   <th scope="col" className="py-3 px-4">Prompt Version</th>
                   <th scope="col" className="py-3 px-4">Token Budget (Avg)</th>
                   <th scope="col" className="py-3 px-4">Optimization</th>

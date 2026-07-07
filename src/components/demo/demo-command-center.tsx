@@ -38,7 +38,7 @@ export const DEMO_ACTS: DemoAct[] = [
     title: '70,000 Spectators Arrive',
     subtitle: 'Normal Steady Ingress',
     description: 'MetLife Stadium opens its gates for the FIFA World Cup 2026. All 4 main turnstiles are processing fans smoothly with normal 18-minute wait times.',
-    aiRole: 'Gemini Flash monitors live turnstile velocity per minute across all stadium collections.',
+    aiRole: 'GLM Flash monitors live turnstile velocity per minute across all stadium collections.',
     icon: <Users className="w-5 h-5 text-emerald-400" aria-hidden="true" />,
     card: 'green',
     minute: "00'",
@@ -57,8 +57,8 @@ export const DEMO_ACTS: DemoAct[] = [
     act: 3,
     title: 'AI Risk Prediction Alert',
     subtitle: 'Queue Depth Regression',
-    description: 'Gemini analyzes concourse density and forecasts severe gridlock (>88% capacity) within 15 minutes, warning of potential spectator crush hazards.',
-    aiRole: 'Gemini Pro predicts concourse gridlock 30 minutes before it occurs and triggers a proactive command-center alert.',
+    description: 'GLM analyzes concourse density and forecasts severe gridlock (>88% capacity) within 15 minutes, warning of potential spectator crush hazards.',
+    aiRole: 'GLM Pro predicts concourse gridlock 30 minutes before it occurs and triggers a proactive command-center alert.',
     icon: <Zap className="w-5 h-5 text-amber-400" aria-hidden="true" />,
     card: 'amber',
     minute: "30'",
@@ -66,9 +66,9 @@ export const DEMO_ACTS: DemoAct[] = [
   {
     act: 4,
     title: 'AI What-If Rerouting',
-    subtitle: 'Gemini 2.5 Pro Simulation',
+    subtitle: 'GLM 5.2 Pro Simulation',
     description: 'The What-If Simulation Engine evaluates opening Gate D auxiliary turnstiles and redirecting Sectors 101-115. Result: 35% congestion reduction in 12 minutes!',
-    aiRole: 'Gemini 2.5 Pro evaluates multi-variable stadium constraints without risking live fan safety.',
+    aiRole: 'GLM 5.2 Pro evaluates multi-variable stadium constraints without risking live fan safety.',
     icon: <Sparkles className="w-5 h-5 text-cyan-400" aria-hidden="true" />,
     card: 'cyan',
     minute: "45'",
@@ -88,7 +88,7 @@ export const DEMO_ACTS: DemoAct[] = [
     title: 'Multilingual Fan Push',
     subtitle: '8-Language Simultaneous PA',
     description: 'The platform broadcasts targeted PA announcements and push notifications across 8 languages directing Gate C commuters to Gate D (5-min wait).',
-    aiRole: 'Gemini Flash translates and localizes custom rerouting directives in < 10 seconds across all World Cup languages.',
+    aiRole: 'GLM Flash translates and localizes custom rerouting directives in < 10 seconds across all World Cup languages.',
     icon: <Radio className="w-5 h-5 text-teal-400" aria-hidden="true" />,
     card: 'green',
     minute: "75'",
@@ -98,7 +98,7 @@ export const DEMO_ACTS: DemoAct[] = [
     title: 'Medical Emergency Sec 112',
     subtitle: 'Multimodal Photo Classification',
     description: 'A spectator collapses from heat exhaustion in Sector 112 row 14. A volunteer snaps a photo and submits an incident report via their mobile app.',
-    aiRole: 'Gemini Vision classifies incident as Priority 2 Medical, grades severity 8/10, and assigns Medical Triage Team Beta.',
+    aiRole: 'GLM Vision classifies incident as Priority 2 Medical, grades severity 8/10, and assigns Medical Triage Team Beta.',
     icon: <HeartPulse className="w-5 h-5 text-purple-400" aria-hidden="true" />,
     card: 'purple',
     minute: "82'",
@@ -117,8 +117,8 @@ export const DEMO_ACTS: DemoAct[] = [
     act: 9,
     title: 'Executive Resolution Summary',
     subtitle: 'Automated Markdown Report (<5s)',
-    description: 'Gate C wait time drops to 14 mins (GREEN). The medical patient is stabilized. Gemini 2.5 Pro generates a professional markdown executive report for FIFA match directors!',
-    aiRole: 'Gemini 2.5 Pro synthesizes 70,000 fan telemetry records into an executive audit report in under 5 seconds.',
+    description: 'Gate C wait time drops to 14 mins (GREEN). The medical patient is stabilized. GLM 5.2 Pro generates a professional markdown executive report for FIFA match directors!',
+    aiRole: 'GLM 5.2 Pro synthesizes 70,000 fan telemetry records into an executive audit report in under 5 seconds.',
     icon: <FileText className="w-5 h-5 text-emerald-400" aria-hidden="true" />,
     card: 'green',
     minute: 'FT',
@@ -273,7 +273,7 @@ export const DemoCommandCenter: React.FC = () => {
             <div className="pt-2 flex items-center gap-2 text-xs bg-[#03110a]/90 p-3 rounded-md border border-emerald-900/50 text-emerald-200">
               <Sparkles className="w-4 h-4 shrink-0 text-amber-400" aria-hidden="true" />
               <div>
-                <span className="font-black text-white">Why Gemini: </span>
+                <span className="font-black text-white">Why GLM: </span>
                 <span className="text-emerald-100/80">{activeActConfig.aiRole}</span>
               </div>
             </div>
@@ -358,9 +358,9 @@ export const DemoCommandCenter: React.FC = () => {
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                   : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
               }`}
-              title={lastEngine === 'gemini' ? 'Generated by real Google Gemini API' : 'Generated by simulated fallback engine'}
+              title={lastEngine === 'gemini' ? 'Generated by real GLM 5.2 API' : 'Generated by simulated fallback engine'}
             >
-              {lastEngine === 'gemini' ? '◆ GEMINI 2.5 PRO' : '◇ SIMULATED'}
+              {lastEngine === 'gemini' ? '◆ GLM 5.2 PRO' : '◇ SIMULATED'}
             </span>
           </div>
           <div className="prose prose-invert prose-sm max-w-none text-emerald-50/80 space-y-4 font-sans leading-relaxed">

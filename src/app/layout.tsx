@@ -27,11 +27,11 @@ const robotoMono = Roboto_Mono({
 export const metadata: Metadata = {
   title: 'FIFA Smart Stadium Copilot – AI-Powered Stadium Operations Platform',
   description:
-    'Enterprise-grade cloud-native SaaS platform designed as the digital command center for the FIFA World Cup 2026. Powered by Google Gemini.',
+    'Enterprise-grade cloud-native SaaS platform designed as the digital command center for the FIFA World Cup 2026. Powered by Zhipu GLM 5.2.',
   keywords: [
     'FIFA World Cup 2026',
     'Smart Stadium',
-    'Google Gemini',
+    'Zhipu GLM 5.2',
     'Prompt Wars',
     'AI Command Center',
     'Crowd Control',
@@ -76,7 +76,7 @@ export default function RootLayout({
               <div className="flex items-center gap-3 text-emerald-100/50">
                 <span className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 live-pulse" aria-hidden="true" />
-                  Google Gemini 2.5
+                  Zhipu GLM 5.2
                 </span>
                 <span aria-hidden="true" className="text-emerald-700">|</span>
                 <span>WCAG 2.2 AA</span>

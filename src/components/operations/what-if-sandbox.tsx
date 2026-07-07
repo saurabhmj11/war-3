@@ -121,7 +121,7 @@ export const WhatIfSandbox: React.FC = () => {
                         : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                     }`}
                   >
-                    {isGeminiLive ? '◆ GEMINI 2.5 PRO' : '◇ SIMULATED'}
+                    {isGeminiLive ? '◆ GLM 5.2 PRO' : '◇ SIMULATED'}
                   </span>
                 </h3>
                 <p className="text-xs text-emerald-100/60">Evaluate multi-variable interventions across live stadium telemetry</p>
@@ -234,7 +234,7 @@ export const WhatIfSandbox: React.FC = () => {
                   <h3 className="jersey-heading text-base font-black text-white">Simulation Analysis Complete</h3>
                 </div>
                 <span className={`text-xs font-mono font-black px-2.5 py-1 rounded-md uppercase tracking-widest ${simResult.engine === 'gemini' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}`}>
-                  {simResult.engine === 'gemini' ? '◆ GEMINI 2.5 PRO' : '◇ SIMULATED'} • {simResult.scenarioId.slice(-6)}
+                  {simResult.engine === 'gemini' ? '◆ GLM 5.2 PRO' : '◇ SIMULATED'} • {simResult.scenarioId.slice(-6)}
                 </span>
               </div>
 
@@ -312,7 +312,7 @@ export const WhatIfSandbox: React.FC = () => {
               <Sparkles className="w-10 h-10 text-emerald-700 animate-pulse relative z-10" aria-hidden="true" />
               <div className="text-sm font-black text-emerald-100/60 jersey-heading relative z-10">No Active Simulation Running</div>
               <p className="text-xs max-w-xs relative z-10">
-                Select a preset scenario on the left or type a custom intervention to test Gemini 2.5 Pro reasoning!
+                Select a preset scenario on the left or type a custom intervention to test GLM 5.2 Pro reasoning!
               </p>
             </div>
           )}
@@ -342,13 +342,13 @@ export const WhatIfSandbox: React.FC = () => {
             {summary ? (
               <div className="bg-[#03110a] p-4 rounded-md border border-emerald-900/40 font-mono text-xs text-emerald-100/80 leading-relaxed whitespace-pre-line max-h-80 overflow-y-auto scrollbar-pitch relative z-10">
                 <div className={`text-[10px] font-black mb-2 uppercase tracking-widest ${summary.engine === 'gemini' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  {summary.engine === 'gemini' ? '◆ Real Google Gemini 2.5 Pro' : '◇ Simulated fallback engine'}
+                  {summary.engine === 'gemini' ? '◆ Real GLM 5.2 Pro' : '◇ Simulated fallback engine'}
                 </div>
                 {summary.markdown}
               </div>
             ) : (
               <div className="text-center py-6 text-xs text-emerald-100/40 relative z-10">
-                Click "Generate" to let Gemini synthesize live telemetry into an executive audit report!
+                Click "Generate" to let GLM synthesize live telemetry into an executive audit report!
               </div>
             )}
           </div>

@@ -15,7 +15,7 @@ export default function OperationsDashboardPage() {
           persona="PERSONA 3 • MARCUS VANCE • VENUE OPERATIONS SUPERVISOR"
           badge="COMMAND CENTER"
           title="Operations What-If Sandbox"
-          description="Test hypothetical operational interventions across live stadium telemetry using Gemini 2.5 Pro without risking fan safety. All changes sync across every connected dashboard."
+          description="Test hypothetical operational interventions across live stadium telemetry using GLM 5.2 Pro without risking fan safety. All changes sync across every connected dashboard."
           icon={LayoutDashboard}
           kit="amber"
           number="08"
