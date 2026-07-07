@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +25,7 @@ export default function SocketDemo() {
   const [inputMessage, setInputMessage] = useState('');
   const [username, setUsername] = useState('');
   const [isUsernameSet, setIsUsernameSet] = useState(false);
-  const [socket, setSocket] = useState<any>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
 
@@ -97,7 +97,7 @@ export default function SocketDemo() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       sendMessage();
     }
@@ -109,7 +109,7 @@ export default function SocketDemo() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             WebSocket Demo
-            <span className={`text-sm px-2 py-1 rounded ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            <span aria-live="polite" className={`text-sm px-2 py-1 rounded ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </span>
           </CardTitle>
@@ -120,12 +120,13 @@ export default function SocketDemo() {
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                onKeyPress={(e) => {
+                onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleJoin();
                   }
                 }}
                 placeholder="Enter your username..."
+                aria-label="Username"
                 disabled={!isConnected}
                 className="flex-1"
               />
@@ -139,7 +140,7 @@ export default function SocketDemo() {
             </div>
           ) : (
             <>
-              <ScrollArea className="h-80 w-full border rounded-md p-4">
+              <ScrollArea className="h-80 w-full border rounded-md p-4" aria-label="Chat messages">
                 <div className="space-y-2">
                   {messages.length === 0 ? (
                     <p className="text-gray-500 text-center">No messages yet</p>
@@ -175,8 +176,9 @@ export default function SocketDemo() {
                 <Input
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyDown}
                   placeholder="Type a message..."
+                  aria-label="Chat message"
                   disabled={!isConnected}
                   className="flex-1"
                 />
