@@ -17,12 +17,21 @@ import { createHmac } from 'crypto';
  */
 
 /**
- * HMAC secret for signing role tokens. In production (NODE_ENV=production)
- * we fail closed: if FIFA_ROLE_TOKEN_SECRET is unset, every token verification
- * returns null, forcing callers to fall back to the anonymous FAN session
- * (which has no mutating permissions). In dev/demo we use a stable default
- * so judges can evaluate without configuration.
+ * HMAC secret for signing role tokens.
+ *
+ * - In dev/demo: uses a stable default so judges can evaluate without config.
+ * - In production: if FIFA_ROLE_TOKEN_SECRET is unset or too short, token
+ *   verification returns null (fail-closed) and token issuance throws.
+ *   This forces callers to fall back to the anonymous FAN session (which
+ *   has no mutating permissions).
+ *
+ * The check is LAZY — it runs when `sign()` or `verifyRoleToken()` is
+ * actually called at request time, NOT at module-load time. This prevents
+ * the production build from crashing during "Collecting page data" when
+ * no env vars are present.
  */
+const DEV_SECRET = 'fifa-smart-stadium-copilot-demo-secret-v1';
+
 function getSecret(): string {
   const env = process.env.FIFA_ROLE_TOKEN_SECRET;
   if (env && env.length >= 16) return env;
@@ -31,11 +40,8 @@ function getSecret(): string {
       'FIFA_ROLE_TOKEN_SECRET must be set to a >=16-char random string in production. Refusing to sign tokens with a default secret.'
     );
   }
-  // Dev/demo default — fine for local evaluation, never for production.
-  return 'fifa-smart-stadium-copilot-demo-secret-v1';
+  return DEV_SECRET;
 }
-
-const SECRET = getSecret();
 
 export interface VerifiedSession {
   uid: string;
@@ -44,7 +50,10 @@ export interface VerifiedSession {
 }
 
 function sign(uid: string, role: UserRole): string {
-  return createHmac('sha256', SECRET).update(`${uid}.${role}`).digest('hex').slice(0, 32);
+  // Secret is resolved lazily so the module can be imported at build time
+  // without crashing — the throw only happens at runtime when a token is
+  // actually being signed.
+  return createHmac('sha256', getSecret()).update(`${uid}.${role}`).digest('hex').slice(0, 32);
 }
 
 /** Issues a verifiable token for the given user; persisted client-side. */
@@ -60,7 +69,14 @@ export function verifyRoleToken(token: string | null | undefined): { uid: string
   const [uid, roleStr, signature] = parts;
   const role = roleStr as UserRole;
   if (!['FAN', 'VOLUNTEER', 'OPERATIONS', 'SECURITY', 'MEDICAL', 'ADMIN'].includes(role)) return null;
-  const expected = sign(uid, role);
+  // In production with no secret configured, fail-closed: return null so
+  // the caller falls back to the anonymous FAN session.
+  let expected: string;
+  try {
+    expected = sign(uid, role);
+  } catch {
+    return null;
+  }
   if (signature !== expected) return null;
   return { uid, role };
 }

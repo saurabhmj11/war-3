@@ -28,7 +28,7 @@ const SECURITY_HEADERS: Record<string, string> = {
   'strict-transport-security': 'max-age=31536000; includeSubDomains',
 };
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   // 1. Rate limit API routes.
   const limited = rateLimit(req);
   if (limited) return limited;
