@@ -3,6 +3,7 @@ import { Inter, Outfit, Roboto_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { Navbar } from '@/components/layout/navbar';
+import { FootballCompanion } from '@/components/football/football-companion';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -86,6 +87,8 @@ export default function RootLayout({
             </div>
           </footer>
         </AuthProvider>
+        {/* Football-lover micro-interaction: a tiny ball trails the cursor */}
+        <FootballCompanion />
       </body>
     </html>
   );

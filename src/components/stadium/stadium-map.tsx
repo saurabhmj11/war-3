@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Gate } from '@/domain/types';
 import { useStadiumState } from '@/hooks/use-stadium-state';
+import { BallPassAnimation } from '@/components/football/ball-pass-animation';
 import { Compass, AlertTriangle } from 'lucide-react';
 
 interface StadiumMapProps {
@@ -205,11 +206,13 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
           <text x="210" y="303" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10" fontWeight="bold" fontFamily="monospace">WEST VIP</text>
           <text x="590" y="303" textAnchor="middle" fill="#ef4444" fontSize="10" fontWeight="bold" fontFamily="monospace">EAST RAIL HUB</text>
 
-          {/* Animated polyline: Gate C → Gate D reroute suggestion */}
+          {/* Animated polyline: Gate C → Gate D reroute suggestion, with a football passing along it */}
           <g>
             <path d="M 680 300 Q 640 120 400 80" fill="none" stroke="#22c55e" strokeWidth="4" strokeDasharray="8 6" filter="url(#glow)">
               <animate attributeName="stroke-dashoffset" from="0" to="-28" dur="2s" repeatCount="indefinite" />
             </path>
+            {/* Football continuously traveling the reroute polyline — a "long ball" from Gate C to Gate D */}
+            <BallPassAnimation pathD="M 680 300 Q 640 120 400 80" duration={4} radius={9} idSuffix="reroute" />
             <circle cx="560" cy="180" r="6" fill="#22c55e">
               <animate attributeName="opacity" values="0.3;1;0.3" dur="1.6s" repeatCount="indefinite" />
             </circle>

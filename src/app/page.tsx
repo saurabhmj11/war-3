@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth/auth-context';
 import { DemoCommandCenter } from '@/components/demo/demo-command-center';
 import { StadiumMap } from '@/components/stadium/stadium-map';
+import { KickoffIntro } from '@/components/football/kickoff-intro';
+import { AnimatedCounter } from '@/components/football/animated-counter';
+import { useGoalOnClick } from '@/components/football/goal-celebration';
 import {
   Trophy,
   Compass,
@@ -119,9 +122,14 @@ const KIT_STRIPE: Record<string, string> = {
 
 export default function HomePage() {
   const { switchRole, isGeminiLive } = useAuth();
+  const kickoffGoal = useGoalOnClick('KICK OFF!');
 
   return (
     <div className="w-full flex flex-col gap-16 pb-20">
+      {/* One-time-per-session kickoff intro — a football flies in and bursts */}
+      <KickoffIntro />
+      {/* Goal celebration overlay (rendered once; fired by kickoffGoal.onClick) */}
+      {kickoffGoal.node}
       {/* ===== HERO — Match-Day Banner with Stadium Floodlights ===== */}
       <section
         aria-labelledby="hero-title"
@@ -137,12 +145,12 @@ export default function HomePage() {
           className="absolute -top-32 right-1/4 w-96 h-96 bg-emerald-400/10 blur-[120px] rounded-full pointer-events-none"
           aria-hidden="true"
         />
-        {/* Pitch stripes overlay */}
-        <div className="absolute inset-0 pitch-stripes opacity-40 pointer-events-none" aria-hidden="true" />
+        {/* Pitch stripes overlay — slowly pans like a camera over mowed grass */}
+        <div className="absolute inset-0 pitch-stripes-pan opacity-40 pointer-events-none" aria-hidden="true" />
 
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10 space-y-7">
           {/* Championship badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0a1f15]/90 border border-amber-400/40 shadow-xl shadow-amber-500/10 text-xs font-bold text-amber-200 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="trophy-shine inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0a1f15]/90 border border-amber-400/40 shadow-xl shadow-amber-500/10 text-xs font-bold text-amber-200 animate-in fade-in slide-in-from-top-4 duration-500">
             <Trophy className="w-4 h-4 text-amber-400" aria-hidden="true" />
             <span className="uppercase tracking-widest font-mono">Prompt Wars Challenge 4 • Smart Stadiums</span>
           </div>
@@ -179,7 +187,8 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <a
               href="#demo-section"
-              className="group px-7 py-4 rounded-md trophy-badge font-black text-sm uppercase tracking-widest shadow-2xl transition-all flex items-center gap-2.5 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#03110a]"
+              onClick={kickoffGoal.onClick}
+              className="trophy-shine group px-7 py-4 rounded-md trophy-badge font-black text-sm uppercase tracking-widest shadow-2xl transition-all flex items-center gap-2.5 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#03110a]"
             >
               <Zap className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" aria-hidden="true" />
               <span>Kick Off 9-Step Demo</span>
@@ -194,23 +203,31 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Scoreboard Telemetry Bar — match clock style */}
+          {/* Scoreboard Telemetry Bar — match clock style, with count-up animation */}
           <div
             className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-5xl pt-10"
             role="group"
             aria-label="Stadium telemetry snapshot"
           >
             {[
-              { val: '82,500', label: 'MetLife Capacity', color: 'text-white', sub: 'EAST RUTHERFORD, NJ' },
-              { val: '70,000', label: 'Live Ingress', color: 'text-emerald-400', sub: '84.8% CAPACITY' },
-              { val: '< 1.5s', label: 'AI Latency', color: 'text-cyan-400', sub: 'P95 SLA MET' },
-              { val: '8', label: 'Languages', color: 'text-amber-400', sub: 'WORLD CUP CORE' },
+              { numeric: 82500, prefix: '', suffix: '', label: 'MetLife Capacity', color: 'text-white', sub: 'EAST RUTHERFORD, NJ' },
+              { numeric: 70000, prefix: '', suffix: '', label: 'Live Ingress', color: 'text-emerald-400', sub: '84.8% CAPACITY' },
+              { numeric: 1.5, prefix: '< ', suffix: 's', decimals: 1, label: 'AI Latency', color: 'text-cyan-400', sub: 'P95 SLA MET' },
+              { numeric: 8, prefix: '', suffix: '', label: 'Languages', color: 'text-amber-400', sub: 'WORLD CUP CORE' },
             ].map((stat, i) => (
               <div
                 key={i}
-                className="card-floodlit rounded-lg p-4 text-center backdrop-blur-xl relative overflow-hidden"
+                className="card-floodlit floodlight-sweep rounded-lg p-4 text-center backdrop-blur-xl relative overflow-hidden"
               >
-                <div className={`text-3xl sm:text-4xl font-black scoreboard-numeral ${stat.color}`}>{stat.val}</div>
+                <div className={`text-3xl sm:text-4xl font-black ${stat.color}`}>
+                  <AnimatedCounter
+                    value={stat.numeric}
+                    prefix={stat.prefix}
+                    suffix={stat.suffix}
+                    decimals={stat.decimals ?? 0}
+                    duration={1600}
+                  />
+                </div>
                 <div className="text-[10px] text-emerald-100/70 uppercase tracking-widest font-bold mt-1 jersey-heading">
                   {stat.label}
                 </div>
@@ -276,7 +293,7 @@ export default function HomePage() {
             return (
               <article
                 key={card.role}
-                className={`relative card-floodlit rounded-xl p-6 shadow-2xl flex flex-col justify-between gap-5 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/10 bg-gradient-to-br ${KIT_BG[card.kit]}`}
+                className={`relative card-floodlit floodlight-sweep card-lift rounded-xl p-6 shadow-2xl flex flex-col justify-between gap-5 bg-gradient-to-br ${KIT_BG[card.kit]}`}
               >
                 {/* Vertical kit stripe (jersey side panel) */}
                 <div className={`absolute top-0 left-0 bottom-0 w-1 rounded-l-xl ${KIT_STRIPE[card.kit]}`} aria-hidden="true" />

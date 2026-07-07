@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { RoleGuard } from '@/components/auth/role-guard';
 import { PageHeader } from '@/components/layout/page-header';
 import { useStadiumState } from '@/hooks/use-stadium-state';
+import { useGoalCelebration } from '@/components/football/goal-celebration';
 import { api } from '@/lib/api-client';
 import {
   Shield,
@@ -26,6 +27,7 @@ export default function SecurityDashboardPage() {
   const [broadcastSuccess, setBroadcastSuccess] = useState(false);
   const [overrideGateId, setOverrideGateId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const goal = useGoalCelebration();
 
   const incidents = state.incidents.filter((i) => i.incidentType === 'SECURITY' || i.incidentType === 'CROWD_CONGESTION');
   const gates = state.gates;
@@ -49,14 +51,16 @@ export default function SecurityDashboardPage() {
     }
   };
 
-  const handleDeterministicOverride = async (gateId: string) => {
+  const handleDeterministicOverride = async (gateId: string, e?: React.MouseEvent) => {
     setOverrideGateId(gateId);
     setError(null);
     try {
       await api.triggerGateOverride(gateId);
+      // Fire a goal celebration at the click point — "OVERRIDE!" like a keeper scoring
+      if (e) goal.fire(e.clientX, e.clientY, 'OVERRIDE!');
     } catch (err) {
-      const e = err as Error & { status?: number };
-      setError(e.status === 403 ? 'Your role cannot trigger evacuation overrides.' : e.message || 'Override failed.');
+      const errr = err as Error & { status?: number };
+      setError(errr.status === 403 ? 'Your role cannot trigger evacuation overrides.' : errr.message || 'Override failed.');
     } finally {
       setOverrideGateId(null);
     }
@@ -64,6 +68,7 @@ export default function SecurityDashboardPage() {
 
   return (
     <RoleGuard allowedRoles={['SECURITY', 'OPERATIONS', 'ADMIN']}>
+      {goal.node}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
         <PageHeader
           persona="PERSONA 4 • SARAH JENKINS • PERIMETER SECURITY LEAD"
@@ -199,7 +204,7 @@ export default function SecurityDashboardPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleDeterministicOverride(gate.gateId)}
+                        onClick={(e) => handleDeterministicOverride(gate.gateId, e)}
                         disabled={isWorking || isOverrideActive}
                         aria-label={`${isOverrideActive ? 'Override active on' : 'Trigger deterministic evacuation override on'} ${gate.name}`}
                         className={`px-4 py-2.5 rounded-md text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 ${

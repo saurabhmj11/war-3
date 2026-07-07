@@ -300,3 +300,265 @@
     radial-gradient(circle at 50% 100%, transparent 0%, transparent 40%, rgba(15, 81, 50, 0.08) 40%, rgba(15, 81, 50, 0.08) 41%, transparent 41%),
     radial-gradient(circle at 50% 100%, transparent 0%, transparent 60%, rgba(15, 81, 50, 0.06) 60%, rgba(15, 81, 50, 0.06) 61%, transparent 61%);
 }
+
+/* ============================================================
+   FOOTBALL MICRO-INTERACTIONS
+   ============================================================
+   A layer of small, hand-crafted animations that make the site
+   feel like it was built by a football lover: pitch stripes that
+   slowly pan like a camera over mowed grass, floodlights that
+   sweep, trophy shine, jersey-number flicker on hover, goal-net
+   shake, stadium wave, kickoff intro, and a 3D ball bounce.
+   ============================================================ */
+
+/* Pitch-stripe pan — slow camera-pan over the mowed grass */
+.pitch-stripes-pan {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(15, 81, 50, 0.18) 0px,
+    rgba(15, 81, 50, 0.18) 40px,
+    rgba(10, 58, 34, 0.18) 40px,
+    rgba(10, 58, 34, 0.18) 80px
+  );
+  background-size: 160px 100%;
+  animation: pitch-pan 24s linear infinite;
+}
+@keyframes pitch-pan {
+  from { background-position: 0 0; }
+  to { background-position: 160px 0; }
+}
+
+/* Floodlight sweep — periodic light bar sweeping across a card */
+.floodlight-sweep {
+  position: relative;
+  overflow: hidden;
+}
+.floodlight-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(252, 211, 77, 0.08) 45%,
+    rgba(252, 211, 77, 0.18) 50%,
+    rgba(252, 211, 77, 0.08) 55%,
+    transparent 100%
+  );
+  transform: skewX(-12deg);
+  pointer-events: none;
+  animation: floodlight-sweep-anim 8s ease-in-out infinite;
+}
+@keyframes floodlight-sweep-anim {
+  0%, 60% { left: -150%; }
+  80%, 100% { left: 150%; }
+}
+
+/* Trophy shine — diagonal shimmer across trophy badges */
+.trophy-shine {
+  position: relative;
+  overflow: hidden;
+}
+.trophy-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.0) 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.0) 70%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: trophy-shine-anim 5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+@keyframes trophy-shine-anim {
+  0%, 70% { left: -120%; }
+  85%, 100% { left: 220%; }
+}
+
+/* Jersey-number flicker — like a stadium digital display scrambling */
+.jersey-flicker {
+  animation: jersey-flicker-anim 0.45s steps(4, end) 1;
+}
+@keyframes jersey-flicker-anim {
+  0%   { content: attr(data-number); opacity: 0.4; transform: translateY(-2px); }
+  25%  { opacity: 0.9; transform: translateY(1px); filter: blur(0.5px); }
+  50%  { opacity: 0.6; transform: translateY(-1px); filter: blur(0.2px); }
+  75%  { opacity: 1; transform: translateY(0); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Card 3D tilt — subtle parallax on hover */
+.card-tilt {
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.card-tilt:hover {
+  transform: perspective(900px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
+}
+
+/* Ball bounce — 3D ball dropping and bouncing away */
+@keyframes ball-bounce-3d {
+  0%   { transform: translate(0, -120vh) scale(0.4) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  60%  { transform: translate(var(--bx, 0), 0) scale(1) rotate(720deg); opacity: 1; }
+  72%  { transform: translate(var(--bx, 0), -22vh) scale(1) rotate(900deg); }
+  84%  { transform: translate(var(--bx, 0), 0) scale(1) rotate(1080deg); }
+  92%  { transform: translate(var(--bx, 0), -8vh) scale(1) rotate(1180deg); }
+  100% { transform: translate(var(--bx, 0), 0) scale(1) rotate(1260deg); opacity: 1; }
+}
+.ball-bounce-in {
+  animation: ball-bounce-3d 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Goal-net shake — net vibrating after a goal */
+@keyframes goal-net-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  60% { transform: translate(-1px, 2px); }
+  80% { transform: translate(1px, -2px); }
+}
+.goal-net-shake {
+  animation: goal-net-shake 0.5s ease-in-out 3;
+}
+
+/* Goal burst — radial confetti burst at the goal location */
+@keyframes goal-burst {
+  0%   { transform: scale(0); opacity: 1; }
+  60%  { opacity: 1; }
+  100% { transform: scale(8); opacity: 0; }
+}
+.goal-burst {
+  animation: goal-burst 0.9s ease-out forwards;
+}
+
+/* Stadium wave — sequential tile lift across the timeline */
+@keyframes stadium-wave {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50%      { transform: translateY(-12px) rotate(-3deg); }
+}
+.stadium-wave-tile {
+  animation: stadium-wave 0.6s ease-in-out 1;
+}
+
+/* Count-up pop — for scoreboard numerals */
+@keyframes counter-pop {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.counter-pop {
+  animation: counter-pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) 1;
+}
+
+/* Kickoff intro — full-screen football flies in then fades */
+@keyframes kickoff-fly-in {
+  0%   { transform: translate(-110vw, -50%) rotate(0deg) scale(0.6); opacity: 0; }
+  20%  { opacity: 1; }
+  70%  { transform: translate(0, 0) rotate(720deg) scale(1.1); opacity: 1; }
+  85%  { transform: translate(0, 0) rotate(720deg) scale(1); opacity: 1; }
+  100% { transform: translate(0, 0) rotate(720deg) scale(1.6); opacity: 0; }
+}
+.kickoff-fly-in {
+  animation: kickoff-fly-in 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes kickoff-overlay-fade {
+  0%, 70% { opacity: 1; }
+  100%    { opacity: 0; visibility: hidden; }
+}
+.kickoff-overlay {
+  animation: kickoff-overlay-fade 2s ease-in-out forwards;
+}
+
+/* Ball trail — cursor-following ball leaves a fading trail */
+.ball-trail {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #f8fafc 35%, #94a3b8 100%);
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.6),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
+  will-change: transform;
+}
+
+/* Pass completion — a small ball that travels along an SVG path */
+@keyframes ball-pass-travel {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
+}
+
+/* Whistle blow — quick scale + rotate when a button is "blown" */
+@keyframes whistle-blow {
+  0%, 100% { transform: scale(1) rotate(0); }
+  20% { transform: scale(1.2) rotate(-8deg); }
+  40% { transform: scale(1.1) rotate(8deg); }
+  60% { transform: scale(1.15) rotate(-4deg); }
+  80% { transform: scale(1.05) rotate(4deg); }
+}
+.whistle-blow {
+  animation: whistle-blow 0.5s ease-in-out 1;
+}
+
+/* Pulse-glow — soft glow ring that pulses outward */
+@keyframes pulse-glow {
+  0%   { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.6); }
+  70%  { box-shadow: 0 0 0 14px rgba(251, 191, 36, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+}
+.pulse-glow {
+  animation: pulse-glow 1.4s ease-out 2;
+}
+
+/* Ball-spin idle — gentle spin on the football icon while waiting */
+@keyframes ball-spin-idle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50%      { transform: rotate(180deg) scale(1.08); }
+}
+.ball-spin-idle {
+  animation: ball-spin-idle 2.4s ease-in-out infinite;
+}
+
+/* Card lift on hover — premium feel for jersey cards */
+.card-lift {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease-out;
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 24px 48px -16px rgba(16, 185, 129, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.5);
+}
+
+/* Reduced-motion guard — respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  .pitch-stripes-pan,
+  .floodlight-sweep::after,
+  .trophy-shine::after,
+  .ball-bounce-in,
+  .stadium-wave-tile,
+  .kickoff-fly-in,
+  .kickoff-overlay,
+  .ball-spin-idle,
+  .pulse-glow,
+  .ball-trail {
+    animation: none !important;
+    transition: none !important;
+  }
+}

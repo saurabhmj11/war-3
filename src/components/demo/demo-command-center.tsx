@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { api } from '@/lib/api-client';
+import { useStadiumWave } from '@/components/football/stadium-wave';
 import {
   Play,
   RotateCcw,
@@ -152,6 +153,7 @@ export const DemoCommandCenter: React.FC = () => {
   const [lastSummary, setLastSummary] = useState<string | null>(null);
   const [lastEngine, setLastEngine] = useState<'gemini' | 'simulated' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const waveClass = useStadiumWave(currentAct);
 
   const triggerAct = async (actNumber: number) => {
     setIsExecuting(true);
@@ -225,9 +227,17 @@ export const DemoCommandCenter: React.FC = () => {
 
           <button
             type="button"
-            onClick={nextAct}
+            onClick={(e) => {
+              // Whistle-blow haptic feedback on click
+              const t = e.currentTarget;
+              t.classList.remove('whistle-blow');
+              // force reflow so the animation re-triggers
+              void t.offsetWidth;
+              t.classList.add('whistle-blow');
+              nextAct();
+            }}
             disabled={isExecuting}
-            className="px-5 py-2 rounded-md trophy-badge text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all disabled:opacity-50 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+            className="trophy-shine px-5 py-2 rounded-md trophy-badge text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all disabled:opacity-50 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             {isExecuting ? (
               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full spin-ball" aria-hidden="true" />
@@ -317,7 +327,9 @@ export const DemoCommandCenter: React.FC = () => {
                 disabled={isExecuting}
                 aria-current={isCurrent ? 'step' : undefined}
                 aria-label={`Trigger Act ${actItem.act}: ${actItem.title}`}
-                className={`flex flex-col items-center p-2.5 rounded-md border text-center transition-all relative overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50 ${
+                className={`flex flex-col items-center p-2.5 rounded-md border text-center transition-all relative overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50 ${waveClass(
+                  actItem.act
+                )} ${
                   isCurrent
                     ? `${CARD_PILL[actItem.card]} scale-105 shadow-lg`
                     : isPassed
