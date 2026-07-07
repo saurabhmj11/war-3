@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -119,8 +119,8 @@ export default function SocketDemo() {
             <div className="space-y-2">
               <Input
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                onKeyPress={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key === 'Enter') {
                     handleJoin();
                   }
@@ -174,7 +174,7 @@ export default function SocketDemo() {
               <div className="flex space-x-2">
                 <Input
                   value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
                   disabled={!isConnected}

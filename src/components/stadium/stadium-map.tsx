@@ -88,7 +88,7 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
                 aria-pressed={concourseLevel === level}
                 className={`px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${
                   concourseLevel === level
-                    ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-[#03110a] shadow-md'
+                    ? 'bg-linear-to-r from-emerald-600 to-emerald-500 text-[#03110a] shadow-md'
                     : 'text-emerald-100/60 hover:text-emerald-100'
                 }`}
               >
@@ -99,12 +99,12 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
         )}
       </div>
 
-      <div className="relative w-full aspect-[16/10] bg-gradient-to-b from-[#0a3a22] to-[#051a10] rounded-md border border-emerald-900/50 overflow-hidden flex items-center justify-center p-4">
+      <div className="relative w-full aspect-16/10 bg-linear-to-b from-[#0a3a22] to-[#051a10] rounded-md border border-emerald-900/50 overflow-hidden flex items-center justify-center p-4">
         {/* Floodlight cones from the four corners */}
-        <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-gradient-to-br from-amber-300/15 to-transparent pointer-events-none" aria-hidden="true" />
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-amber-300/15 to-transparent pointer-events-none" aria-hidden="true" />
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-amber-300/8 to-transparent pointer-events-none" aria-hidden="true" />
-        <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-amber-300/8 to-transparent pointer-events-none" aria-hidden="true" />
+        <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-linear-to-br from-amber-300/15 to-transparent pointer-events-none" aria-hidden="true" />
+        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-linear-to-bl from-amber-300/15 to-transparent pointer-events-none" aria-hidden="true" />
+        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-linear-to-tr from-amber-300/8 to-transparent pointer-events-none" aria-hidden="true" />
+        <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-linear-to-tl from-amber-300/8 to-transparent pointer-events-none" aria-hidden="true" />
 
         <svg viewBox="0 0 800 600" className="w-full h-full max-h-[500px] drop-shadow-2xl relative z-10" role="img" aria-label="Vector map of MetLife Stadium with four entrance gates, yard-line markings, and a center pitch">
           <defs>
