@@ -43,6 +43,7 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
   React.useEffect(() => {
     if (selectedGateId) {
       const match = state.gates.find((g) => g.gateId === selectedGateId);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (match) setSelectedGate(match);
     }
   }, [selectedGateId, state.gates]);

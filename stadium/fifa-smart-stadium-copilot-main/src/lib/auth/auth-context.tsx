@@ -23,16 +23,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE !== 'false' || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
-  useEffect(() => {
-    // In Demo Mode or local evaluation, load initial role from localStorage or default to FAN
-    const savedRole = (typeof window !== 'undefined' ? localStorage.getItem('fifa_demo_role') : null) as UserRole | null;
-    const initialRole: UserRole = savedRole && ['FAN', 'VOLUNTEER', 'OPERATIONS', 'SECURITY', 'MEDICAL', 'ADMIN'].includes(savedRole)
-      ? savedRole
-      : 'FAN';
-
-    loadUserForRole(initialRole);
-  }, []);
-
   const loadUserForRole = async (targetRole: UserRole) => {
     setIsLoading(true);
     try {
@@ -49,6 +39,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    // In Demo Mode or local evaluation, load initial role from localStorage or default to FAN
+    const savedRole = (typeof window !== 'undefined' ? localStorage.getItem('fifa_demo_role') : null) as UserRole | null;
+    const initialRole: UserRole = savedRole && ['FAN', 'VOLUNTEER', 'OPERATIONS', 'SECURITY', 'MEDICAL', 'ADMIN'].includes(savedRole)
+      ? savedRole
+      : 'FAN';
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadUserForRole(initialRole);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const switchRole = (newRole: UserRole) => {
     if (typeof window !== 'undefined') {

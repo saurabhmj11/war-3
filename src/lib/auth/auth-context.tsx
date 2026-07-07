@@ -64,6 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       savedRole && ['FAN', 'VOLUNTEER', 'OPERATIONS', 'SECURITY', 'MEDICAL', 'ADMIN'].includes(savedRole)
         ? savedRole
         : 'FAN';
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadUserForRole(initialRole);
   }, [loadUserForRole]);
 
