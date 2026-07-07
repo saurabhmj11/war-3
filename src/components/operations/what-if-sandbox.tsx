@@ -145,7 +145,7 @@ export const WhatIfSandbox: React.FC = () => {
                   aria-label={`Load preset: ${preset.label}`}
                 >
                   <div className="font-black truncate group-hover:text-amber-300 jersey-heading">{preset.label}</div>
-                  <div className="text-[10px] text-emerald-100/40 truncate mt-0.5">Click to configure</div>
+                  <div className="text-[10px] text-emerald-100/75 truncate mt-0.5">Click to configure</div>
                 </button>
               ))}
             </div>
@@ -248,7 +248,7 @@ export const WhatIfSandbox: React.FC = () => {
                 </div>
                 <div className="bg-[#03110a]/80 p-4 rounded-md border border-emerald-900/40 text-center">
                   <div className="text-3xl font-black text-white font-mono scoreboard-numeral">
-                    {simResult.newEstimatedWaitMinutes} <span className="text-sm font-normal text-emerald-100/40">min</span>
+                    {simResult.newEstimatedWaitMinutes} <span className="text-sm font-normal text-emerald-100/75">min</span>
                   </div>
                   <div className="text-[11px] text-emerald-100/60 uppercase tracking-widest font-black mt-1 jersey-heading">Projected Wait Time</div>
                 </div>
@@ -307,7 +307,7 @@ export const WhatIfSandbox: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="card-floodlit rounded-xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[360px] text-emerald-100/40 space-y-3 relative overflow-hidden">
+            <div className="card-floodlit rounded-xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[360px] text-emerald-100/75 space-y-3 relative overflow-hidden">
               <div className="absolute inset-0 pitch-stripes opacity-15" aria-hidden="true" />
               <Sparkles className="w-10 h-10 text-emerald-700 animate-pulse relative z-10" aria-hidden="true" />
               <div className="text-sm font-black text-emerald-100/60 jersey-heading relative z-10">No Active Simulation Running</div>
@@ -347,7 +347,7 @@ export const WhatIfSandbox: React.FC = () => {
                 {summary.markdown}
               </div>
             ) : (
-              <div className="text-center py-6 text-xs text-emerald-100/40 relative z-10">
+              <div className="text-center py-6 text-xs text-emerald-100/75 relative z-10">
                 Click "Generate" to let GLM synthesize live telemetry into an executive audit report!
               </div>
             )}

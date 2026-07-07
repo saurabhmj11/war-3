@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { repository, CollectionName } from '@/lib/db/repository';
-import { eventBus } from '@/lib/events/event-bus';
+import { eventBus, EventTopic } from '@/lib/events/event-bus';
 import type { SeedDatabase } from '@/lib/db/seed-data';
 
 export const dynamic = 'force-dynamic';
@@ -23,16 +23,31 @@ const ALL_COLLECTIONS: CollectionName[] = [
   'accessibilityRoutes',
 ];
 
+const VALID_COLLECTIONS = new Set<string>(ALL_COLLECTIONS);
+
 /**
- * GET /api/events
+ * GET /api/events?collections=gates,incidents,crowdMetrics
  *
  * Server-Sent Events stream. Pushes a `{ collection, data, ts }` JSON message
- * to the client any time a watched collection changes server-side. This is
- * the mechanism that makes one role's action (e.g. Security triggering a
- * gate override) visible on every other role's dashboard without a manual
- * refresh — the "real-time decision support" pillar of the challenge brief.
+ * to the client any time a watched collection changes server-side.
+ *
+ * The optional `?collections=` query param lets each dashboard subscribe to
+ * ONLY the collections it actually uses, reducing server-side fan-out work
+ * and client-side re-renders. If omitted, all collections are streamed.
  */
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+  // Parse the optional collections filter.
+  const { searchParams } = new URL(req.url);
+  const requestedCollections = searchParams.get('collections');
+  const watched: CollectionName[] = requestedCollections
+    ? requestedCollections
+        .split(',')
+        .map((c) => c.trim())
+        .filter((c) => VALID_COLLECTIONS.has(c)) as CollectionName[]
+    : ALL_COLLECTIONS;
+  // Fallback to ALL if the filter was empty/invalid.
+  const collections = watched.length > 0 ? watched : ALL_COLLECTIONS;
+
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     start(controller) {
@@ -47,7 +62,7 @@ export async function GET(_req: NextRequest) {
 
       const unsubs: Array<() => void> = [];
 
-      for (const collection of ALL_COLLECTIONS) {
+      for (const collection of collections) {
         const unsub = repository.subscribe<SeedDatabase[typeof collection]>(collection, (data) => {
           const payload = JSON.stringify({ collection, data, ts: Date.now() });
           try {
@@ -59,9 +74,20 @@ export async function GET(_req: NextRequest) {
         unsubs.push(unsub);
       }
 
-      // Also surface event-bus publishes.
-      const unsubBus = eventBus.subscribe('*', (async () => {}) as never);
-      unsubs.push(unsubBus);
+      // Also surface event-bus publishes for all known topics.
+      const eventTopics: EventTopic[] = [
+        'stadium.incident.created',
+        'stadium.gate.congested',
+        'stadium.simulation.act_triggered',
+        'stadium.emergency.broadcast_requested',
+      ];
+      eventTopics.forEach((topic) => {
+        const unsub = eventBus.subscribe(topic, async () => {
+          // The actual state change will already be fanned out via the
+          // repository subscribers above; this just keeps the bus warm.
+        });
+        unsubs.push(unsub);
+      });
 
       // Initial hello so the client knows the stream is alive.
       controller.enqueue(encoder.encode(`event: ready\ndata: ${JSON.stringify({ ts: Date.now() })}\n\n`));
@@ -77,10 +103,8 @@ export async function GET(_req: NextRequest) {
           }
         });
       };
-      // ReadableStream cancel hook
-      // @ts-expect-error - cancel is supported but not in our minimal type
-      void cleanup;
-      // Attach via request cancellation is not directly available; rely on close below.
+      // Reference cleanup so it's not flagged as unused; the ReadableStream
+      // cancel() hook below handles per-reader teardown.
       void cleanup;
     },
     cancel() {

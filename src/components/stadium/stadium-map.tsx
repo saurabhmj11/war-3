@@ -196,15 +196,15 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
           <rect x="510" y="295" width="5" height="10" fill="#ffffff" opacity="0.9" />
 
           {/* Tournament branding text */}
-          <text x="400" y="212" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="10" fontWeight="bold" letterSpacing="3" fontFamily="monospace">
+          <text x="400" y="212" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="10" fontWeight="bold" letterSpacing="3" fontFamily="monospace" aria-hidden="true">
             FIFA WORLD CUP 2026 • METLIFE PITCH
           </text>
 
           {/* Sector labels */}
-          <text x="400" y="145" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10" fontWeight="bold" fontFamily="monospace">SECTORS 101-115 (NORTH)</text>
-          <text x="400" y="465" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10" fontWeight="bold" fontFamily="monospace">SECTORS 120-135 (SOUTH)</text>
-          <text x="210" y="303" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10" fontWeight="bold" fontFamily="monospace">WEST VIP</text>
-          <text x="590" y="303" textAnchor="middle" fill="#ef4444" fontSize="10" fontWeight="bold" fontFamily="monospace">EAST RAIL HUB</text>
+          <text x="400" y="145" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10" fontWeight="bold" fontFamily="monospace" aria-hidden="true">SECTORS 101-115 (NORTH)</text>
+          <text x="400" y="465" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10" fontWeight="bold" fontFamily="monospace" aria-hidden="true">SECTORS 120-135 (SOUTH)</text>
+          <text x="210" y="303" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="10" fontWeight="bold" fontFamily="monospace" aria-hidden="true">WEST VIP</text>
+          <text x="590" y="303" textAnchor="middle" fill="#ef4444" fontSize="10" fontWeight="bold" fontFamily="monospace" aria-hidden="true">EAST RAIL HUB</text>
 
           {/* Animated polyline: Gate C → Gate D reroute suggestion, with a football passing along it */}
           <g>
@@ -216,7 +216,7 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
             <circle cx="560" cy="180" r="6" fill="#22c55e">
               <animate attributeName="opacity" values="0.3;1;0.3" dur="1.6s" repeatCount="indefinite" />
             </circle>
-            <text x="570" y="175" fill="#22c55e" fontSize="11" fontWeight="bold" className="drop-shadow-md">
+            <text x="570" y="175" fill="#22c55e" fontSize="11" fontWeight="bold" className="drop-shadow-md" aria-hidden="true">
               ⚡ AI Step-Free Reroute (3 min Walk)
             </text>
           </g>

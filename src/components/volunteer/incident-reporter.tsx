@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Incident, IncidentClassificationDTO, Task } from '@/domain/types';
 import { api } from '@/lib/api-client';
 import { useStadiumState } from '@/hooks/use-stadium-state';
-import { useAuth } from '@/lib/auth/auth-context';
 import {
   Camera,
   AlertTriangle,
@@ -38,7 +37,6 @@ const SAMPLE_PHOTOS = [
 
 export const IncidentReporter: React.FC = () => {
   const { state } = useStadiumState();
-  const { user } = useAuth();
   const [description, setDescription] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
   const [sector, setSector] = useState('112');
@@ -59,7 +57,6 @@ export const IncidentReporter: React.FC = () => {
     try {
       const { aiClassification } = await api.createIncident({
         stadiumId: 'metlife-ny-nj',
-        reportedByUid: user?.uid ?? 'usr_vol_1',
         incidentType: 'MAINTENANCE', // AI will override this!
         location: { sector, concourseLevel: 'Lower Bowl' },
         description,
@@ -134,7 +131,7 @@ export const IncidentReporter: React.FC = () => {
                   aria-label={`Load sample scenario: ${sample.label}`}
                 >
                   <div className="font-black truncate group-hover:text-sky-300 jersey-heading">{sample.label}</div>
-                  <div className="text-[10px] text-emerald-100/40 truncate mt-0.5">Click to load photo</div>
+                  <div className="text-[10px] text-emerald-100/75 truncate mt-0.5">Click to load photo</div>
                 </button>
               ))}
             </div>
@@ -172,7 +169,7 @@ export const IncidentReporter: React.FC = () => {
                     placeholder="https://..."
                     className="w-full bg-[#03110a] border border-emerald-900/50 rounded-md pl-8 pr-3 py-2.5 text-xs text-white placeholder:text-emerald-100/30 focus:outline-none focus:border-sky-500"
                   />
-                  <ImageIcon className="w-3.5 h-3.5 text-emerald-100/40 absolute left-2.5 top-3" aria-hidden="true" />
+                  <ImageIcon className="w-3.5 h-3.5 text-emerald-100/75 absolute left-2.5 top-3" aria-hidden="true" />
                 </div>
               </div>
             </div>
@@ -267,7 +264,7 @@ export const IncidentReporter: React.FC = () => {
           </div>
           <div className="space-y-3 max-h-80 overflow-y-auto pr-1 scrollbar-pitch relative z-10">
             {tasks.length === 0 ? (
-              <div className="text-center py-6 text-xs text-emerald-100/40">No pending shift tasks assigned.</div>
+              <div className="text-center py-6 text-xs text-emerald-100/75">No pending shift tasks assigned.</div>
             ) : (
               tasks.map((task) => (
                 <div
@@ -282,7 +279,7 @@ export const IncidentReporter: React.FC = () => {
                     <span className={`text-[10px] font-mono font-black px-2 py-0.5 rounded-md tracking-widest uppercase ${task.priority === 'URGENT' ? 'bg-red-500/20 text-red-300 border border-red-500/40' : 'bg-sky-500/20 text-sky-300 border border-sky-500/40'}`}>
                       {task.priority} PRIORITY
                     </span>
-                    <span className="text-[10px] text-emerald-100/40 font-mono">{task.taskId}</span>
+                    <span className="text-[10px] text-emerald-100/75 font-mono">{task.taskId}</span>
                   </div>
                   <h4 className="text-sm font-black text-white jersey-heading">{task.title}</h4>
                   <p className="text-xs text-emerald-100/60 mt-1 leading-relaxed">{task.description}</p>
@@ -296,7 +293,7 @@ export const IncidentReporter: React.FC = () => {
                           disabled={taskUpdatingId === task.taskId}
                           className="w-4 h-4 rounded border-emerald-700 text-sky-600 focus:ring-0 bg-[#03110a]"
                         />
-                        <span className={item.completed ? 'line-through text-emerald-100/40' : ''}>{item.item}</span>
+                        <span className={item.completed ? 'line-through text-emerald-100/75' : ''}>{item.item}</span>
                       </label>
                     ))}
                   </div>
@@ -317,7 +314,7 @@ export const IncidentReporter: React.FC = () => {
           </div>
           <div className="space-y-3 max-h-80 overflow-y-auto pr-1 scrollbar-pitch relative z-10">
             {recentIncidents.length === 0 ? (
-              <div className="text-center py-6 text-xs text-emerald-100/40">No incidents reported.</div>
+              <div className="text-center py-6 text-xs text-emerald-100/75">No incidents reported.</div>
             ) : (
               recentIncidents.map((inc) => {
                 const badge = getSeverityBadge(inc.severity);
@@ -325,7 +322,7 @@ export const IncidentReporter: React.FC = () => {
                   <div key={inc.incidentId} className="bg-[#03110a]/80 border border-emerald-900/40 p-3.5 rounded-md space-y-2">
                     <div className="flex items-center justify-between">
                       <span className={`text-[10px] font-mono font-black px-2 py-0.5 rounded-md border tracking-widest uppercase ${badge.bg}`}>{badge.label}</span>
-                      <span className="text-[10px] font-mono text-emerald-100/40">
+                      <span className="text-[10px] font-mono text-emerald-100/75">
                         SEC {inc.location.sector} • {inc.status}
                       </span>
                     </div>

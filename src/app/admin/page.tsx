@@ -150,16 +150,16 @@ export default function AdminDashboardPage() {
           </div>
           <div className="space-y-2 max-h-96 overflow-y-auto pr-1 scrollbar-pitch relative z-10">
             {auditLogs.length === 0 ? (
-              <div className="text-center py-6 text-xs text-emerald-100/40">No audit entries yet.</div>
+              <div className="text-center py-6 text-xs text-emerald-100/75">No audit entries yet.</div>
             ) : (
               auditLogs.map((log) => (
                 <div key={log.auditId} className="bg-[#03110a]/80 border border-emerald-900/40 p-3 rounded-md text-xs">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-mono font-black text-emerald-300 tracking-widest uppercase">{log.actionType}</span>
-                    <span className="text-[10px] text-emerald-100/40 font-mono">{new Date(log.timestamp).toLocaleString()}</span>
+                    <span className="text-[10px] text-emerald-100/75 font-mono">{new Date(log.timestamp).toLocaleString()}</span>
                   </div>
                   <div className="text-emerald-100/80">{log.details}</div>
-                  <div className="text-[10px] text-emerald-100/40 mt-1 font-mono">
+                  <div className="text-[10px] text-emerald-100/75 mt-1 font-mono">
                     ACTOR: {log.actorUid} • TARGET: {log.targetResource}
                   </div>
                 </div>

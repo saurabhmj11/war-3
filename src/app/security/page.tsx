@@ -101,7 +101,7 @@ export default function SecurityDashboardPage() {
               </div>
               <div className="space-y-3 max-h-96 overflow-y-auto pr-1 scrollbar-pitch relative z-10">
                 {incidents.length === 0 ? (
-                  <div className="text-center py-8 text-xs text-emerald-100/40">
+                  <div className="text-center py-8 text-xs text-emerald-100/75">
                     🟢 All concourse sectors and perimeter gates secure. Zero anomalies reported.
                   </div>
                 ) : (
@@ -209,7 +209,7 @@ export default function SecurityDashboardPage() {
                         aria-label={`${isOverrideActive ? 'Override active on' : 'Trigger deterministic evacuation override on'} ${gate.name}`}
                         className={`px-4 py-2.5 rounded-md text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 ${
                           isOverrideActive
-                            ? 'bg-emerald-950 text-emerald-100/40 cursor-not-allowed border border-emerald-900/50'
+                            ? 'bg-emerald-950 text-emerald-100/75 cursor-not-allowed border border-emerald-900/50'
                             : 'bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-900/50 active:scale-95'
                         }`}
                       >

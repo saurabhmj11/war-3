@@ -231,7 +231,7 @@ export default function HomePage() {
                 <div className="text-[10px] text-emerald-100/70 uppercase tracking-widest font-bold mt-1 jersey-heading">
                   {stat.label}
                 </div>
-                <div className="text-[9px] text-emerald-100/40 font-mono mt-0.5">{stat.sub}</div>
+                <div className="text-[9px] text-emerald-100/75 font-mono mt-0.5">{stat.sub}</div>
               </div>
             ))}
           </div>
@@ -379,6 +379,7 @@ export default function HomePage() {
               { color: 'text-rose-400', title: 'Real-Time Cross-Tab Sync', body: 'Server-Sent Events stream pushes state changes to every connected dashboard. One role action is instantly visible on all others.' },
               { color: 'text-sky-400', title: 'Multimodal Photo Triage', body: 'Volunteer incident reporter sends actual photo URLs to GLM Vision for severity grading and structured JSON classification.' },
               { color: 'text-fuchsia-400', title: 'Auditable AI Decisions', body: 'Every GLM call is logged with engine name, actor uid, and structured response — full traceability.' },
+              { color: 'text-orange-400', title: 'Transportation & Parking', body: 'Fan Copilot gives grounded parking, EV-charging, shuttle, and commuter-rail recommendations — covering all 8 brief pillars.' },
             ].map((item) => (
               <div key={item.title} className="bg-[#03110a]/80 p-5 rounded-lg border border-emerald-900/40 space-y-2 hover:border-emerald-700/60 transition-colors">
                 <CheckCircle2 className={`w-5 h-5 ${item.color}`} aria-hidden="true" />

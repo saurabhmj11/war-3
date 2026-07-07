@@ -299,7 +299,7 @@ export const DemoCommandCenter: React.FC = () => {
             <div className="text-4xl font-black text-white font-mono mt-1">
               {currentAct}<span className="text-emerald-700 mx-1">/</span><span className="text-emerald-400">9</span>
             </div>
-            <div className="text-[10px] text-emerald-100/40 font-mono mt-0.5">{activeActConfig.minute}</div>
+            <div className="text-[10px] text-emerald-100/75 font-mono mt-0.5">{activeActConfig.minute}</div>
             <div className="mt-3 w-full bg-emerald-950 rounded-full h-1.5 overflow-hidden" role="progressbar" aria-valuenow={currentAct} aria-valuemin={1} aria-valuemax={9}>
               <div
                 className="bg-gradient-to-r from-emerald-500 via-amber-400 to-emerald-400 h-full transition-all duration-500"

@@ -103,9 +103,59 @@ function extractJson<T = unknown>(text: string): T | null {
  * so no env-var key is required when running in the sandbox. To force GLM
  * off and run on the simulated engine only, set ZAI_DISABLED=1.
  */
+/**
+ * Tiny LRU cache for GLM responses, keyed by a hash of (model + system +
+ * user) prompt. Caches only successful parses for a short TTL so repeat
+ * queries (e.g. the Fan Copilot asking "which gate is fastest?" twice in a
+ * row) don't re-hit the API. Cached entries are tagged `engine: 'gemini'`
+ * because they were produced by GLM (just earlier).
+ *
+ * Disabled when ZAI_CACHE_DISABLED=1.
+ */
+class PromptCache {
+  private map = new Map<string, { value: unknown; expires: number }>();
+  private maxEntries = 64;
+  private ttlMs = 60_000; // 1 minute
+  constructor() {
+    if (process.env.ZAI_CACHE_DISABLED === '1') {
+      this.maxEntries = 0;
+    }
+  }
+  private hash(s: string): string {
+    // Simple FNV-1a hash — fast, good enough for cache keys.
+    let h = 0x811c9dc5;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return (h >>> 0).toString(16);
+  }
+  get(key: string): unknown | undefined {
+    if (this.maxEntries === 0) return undefined;
+    const entry = this.map.get(this.hash(key));
+    if (!entry) return undefined;
+    if (Date.now() > entry.expires) {
+      this.map.delete(this.hash(key));
+      return undefined;
+    }
+    return entry.value;
+  }
+  set(key: string, value: unknown): void {
+    if (this.maxEntries === 0) return;
+    const h = this.hash(key);
+    // LRU eviction
+    if (this.map.size >= this.maxEntries) {
+      const firstKey = this.map.keys().next().value;
+      if (firstKey) this.map.delete(firstKey);
+    }
+    this.map.set(h, { value, expires: Date.now() + this.ttlMs });
+  }
+}
+
 export class GlmEngine implements IGeminiClient {
   public readonly engineName = 'gemini' as const; // kept for interface compat; UI label is "GLM 5.2"
   private zaiPromise: Promise<ZAI> | null = null;
+  private cache = new PromptCache();
 
   constructor() {
     if (process.env.ZAI_DISABLED === '1') {
@@ -171,7 +221,7 @@ export class GlmEngine implements IGeminiClient {
         ? history.slice(-6).map((t) => `${t.role.toUpperCase()}: ${t.content}`).join('\n')
         : '(no prior turns)';
 
-      const systemPrompt = `You are the FIFA Smart Stadium Copilot for MetLife Stadium during the FIFA World Cup 2026. You help FANS with navigation, gate wait times, step-free accessible routing, and finding food/restrooms.
+      const systemPrompt = `You are the FIFA Smart Stadium Copilot for MetLife Stadium during the FIFA World Cup 2026. You help FANS with navigation, gate wait times, step-free accessible routing, finding food/restrooms, PARKING & TRANSPORTATION (commuter rail, parking lots, EV charging, shuttle connections), and sustainability tips.
 
 ${context}
 
@@ -179,13 +229,22 @@ Reply STRICTLY as a JSON object with these keys:
 {
   "responseText": string,                       // concise reply to the fan in ${langName}
   "suggestedActionType": "NAVIGATE" | "VIEW_WAIT_TIME" | "REPORT_ISSUE",
-  "suggestedActionTargetId": string | null,     // e.g. "gate-d" or "food-taco-fiesta"
+  "suggestedActionTargetId": string | null,     // e.g. "gate-d", "food-taco-fiesta", or "lot-4-general"
   "suggestedActionLabel": string,               // short CTA label
   "navigationPolyline": string | null,          // "lat,lng|lat,lng" or null
   "estimatedWaitMinutes": number | null
 }
 
-Be grounded in the live telemetry above. If the fan asks about a gate, recommend the FASTEST gate from the data. If they need step-free access, prefer Gate D which has ELEVATOR_NORTH_1. Mention concrete wait-time numbers from the data. Output JSON only — no prose, no code fences.`;
+Be grounded in the live telemetry above. If the fan asks about a gate, recommend the FASTEST gate from the data. If they need step-free access, prefer Gate D which has ELEVATOR_NORTH_1. If they ask about PARKING or TRANSPORTATION, reference the parking lots in the telemetry (including EV charging availability, shuttle connection to a specific gate, and lot status OPEN/NEAR_CAPACITY/FULL). If they ask about the commuter rail, note that Gate C is the rail hub and may be congested. Mention concrete numbers from the data. Output JSON only — no prose, no code fences.`;
+
+      const userPrompt = `Conversation so far:\n${historyBlock}\n\nFAN QUESTION: ${message}\n\nReply in ${langName}.`;
+      // Cache check — if we've answered this exact (model+system+user) prompt
+      // in the last minute, return the cached GLM response without re-calling.
+      const cacheKey = `${CHAT_MODEL}|${systemPrompt}|${userPrompt}`;
+      const cached = this.cache.get(cacheKey) as FanCopilotResponseDTO | undefined;
+      if (cached) {
+        return { ...cached, engine: 'gemini' };
+      }
 
       const zai = await this.getClient();
       const completion = await withTimeout(
@@ -193,10 +252,7 @@ Be grounded in the live telemetry above. If the fan asks about a gate, recommend
           model: CHAT_MODEL,
           messages: [
             { role: 'system', content: systemPrompt },
-            {
-              role: 'user',
-              content: `Conversation so far:\n${historyBlock}\n\nFAN QUESTION: ${message}\n\nReply in ${langName}.`,
-            },
+            { role: 'user', content: userPrompt },
           ],
           thinking: { type: 'disabled' },
           temperature: 0.4,
@@ -219,7 +275,7 @@ Be grounded in the live telemetry above. If the fan asks about a gate, recommend
         throw new Error('GLM returned no parseable responseText');
       }
 
-      return {
+      const result: FanCopilotResponseDTO = {
         responseText: String(parsed.responseText),
         suggestedAction:
           parsed.suggestedActionType || parsed.suggestedActionLabel
@@ -234,6 +290,9 @@ Be grounded in the live telemetry above. If the fan asks about a gate, recommend
         translatedLanguage: language,
         engine: 'gemini', // tag as 'gemini' so existing UI logic treats this as the real engine path
       };
+      // Cache the successful parse for repeat queries.
+      this.cache.set(cacheKey, result);
+      return result;
     } catch (err) {
       console.warn('[GlmEngine.generateFanResponse] Falling back to simulated engine:', err);
       const fb = await FALLBACK.generateFanResponse(message, language, history, _userLocation);

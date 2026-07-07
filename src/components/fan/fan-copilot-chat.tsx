@@ -36,6 +36,7 @@ export const FanCopilotChat: React.FC<FanCopilotChatProps> = ({ onNavigateReques
     { label: '🏃 Fastest Gate Sec 112', query: 'Which gate is fastest to enter for Sector 112 right now?' },
     { label: '🌮 Vegetarian Tacos', query: 'Where can I get vegetarian or vegan tacos near Sector 112?' },
     { label: '♿ Step-Free Elevator', query: 'Show me the step-free accessible elevator route to my seat.' },
+    { label: '🅿️ Parking & Rail', query: 'Where should I park, and which gate is closest to the commuter rail? Include EV charging and shuttle info.' },
     { label: '🇪🇸 ¿Puerta C?', query: '¿Cuánto tiempo de espera hay en la Puerta C?' },
   ];
 
@@ -134,6 +135,7 @@ export const FanCopilotChat: React.FC<FanCopilotChatProps> = ({ onNavigateReques
                 {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
               </div>
               <div
+                lang={!isUser ? defaultLang : undefined}
                 className={`p-3 rounded-md text-xs sm:text-sm leading-relaxed shadow-sm ${
                   isUser
                     ? 'bg-emerald-500 text-[#03110a] rounded-tr-none font-medium'
@@ -203,7 +205,7 @@ export const FanCopilotChat: React.FC<FanCopilotChatProps> = ({ onNavigateReques
           onChange={(e) => setInputMsg(e.target.value)}
           placeholder="Ask in English, Español, Français, العربية, 日本語…"
           disabled={isLoading}
-          className="flex-1 bg-[#03110a] border border-emerald-900/50 rounded-md px-4 py-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/40 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40 transition-all disabled:opacity-50"
+          className="flex-1 bg-[#03110a] border border-emerald-900/50 rounded-md px-4 py-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/75 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40 transition-all disabled:opacity-50"
         />
         <button
           type="submit"
@@ -216,7 +218,7 @@ export const FanCopilotChat: React.FC<FanCopilotChatProps> = ({ onNavigateReques
       </form>
 
       {lastEngine && (
-        <div className="text-[10px] text-emerald-100/40 text-center mt-2 font-mono relative z-10" aria-live="polite">
+        <div className="text-[10px] text-emerald-100/75 text-center mt-2 font-mono relative z-10" aria-live="polite">
           Last response:{' '}
           <span className={lastEngine === 'gemini' ? 'text-emerald-400' : 'text-amber-400'}>
             {lastEngine === 'gemini' ? '◆ Real GLM 5.2 API' : '◇ Simulated fallback engine'}

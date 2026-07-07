@@ -167,7 +167,7 @@ export const RoleSwitcher: React.FC = () => {
             })}
           </div>
 
-          <div className="mt-1 pt-2 px-3 pb-2 border-t border-emerald-900/50 text-[10px] text-emerald-100/40 text-center font-mono">
+          <div className="mt-1 pt-2 px-3 pb-2 border-t border-emerald-900/50 text-[10px] text-emerald-100/75 text-center font-mono">
             FIFA WC 2026 • RBAC ENFORCED SERVER-SIDE
           </div>
         </div>

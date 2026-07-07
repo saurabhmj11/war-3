@@ -162,6 +162,7 @@ The non-LLM safety override (`EmergencyCopilotService.triggerDeterministicEvacua
 | Navigation | Fan Copilot gate/route recommendations, backed by real GLM reasoning over live gate/queue data |
 | Crowd management | Operations What-If Sandbox simulation calls to GLM 5.2 Pro over live crowd metrics |
 | Accessibility | WCAG fixes (skip link, ARIA landmarks, keyboard nav, screen-reader labels) + step-free routing surfaced through the Fan and Medical copilots |
+| Transportation | Fan Copilot parking/EV-charging/shuttle/commuter-rail recommendations grounded in live `Parking` telemetry; "🅿️ Parking & Rail" quick chip |
 | Multilingual assistance | 8-language real-time translation via GLM for chat and emergency broadcasts |
 | Operational intelligence | GLM-generated executive summaries from live telemetry |
 | Real-time decision support | Shared server-side state + SSE live dashboard updates across roles |

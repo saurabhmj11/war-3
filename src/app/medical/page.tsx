@@ -45,7 +45,7 @@ export default function MedicalDashboardPage() {
               </div>
               <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1 scrollbar-pitch relative z-10">
                 {incidents.length === 0 ? (
-                  <div className="text-center py-8 text-xs text-emerald-100/40">
+                  <div className="text-center py-8 text-xs text-emerald-100/75">
                     🟢 Zero active medical incidents. Medical stations operating at standby.
                   </div>
                 ) : (

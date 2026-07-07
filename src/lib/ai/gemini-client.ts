@@ -87,8 +87,3 @@ export function __setGeminiClientForTesting(client: IGeminiClient | null) {
 export function isGeminiLiveConfigured(): boolean {
   return process.env.ZAI_DISABLED !== '1';
 }
-
-// Backwards-compatible direct export — uses the simulated engine eagerly so
-// importing this module never throws when GLM is unavailable. Real callers
-// should use `await getGeminiClient()` to get the env-driven instance.
-export const geminiClient: IGeminiClient = new SimulatedGeminiEngine();

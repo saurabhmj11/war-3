@@ -148,6 +148,48 @@ export class SimulatedGeminiEngine implements IGeminiClient {
       };
     }
 
+    // Parking / transportation / commuter rail / EV charging query
+    if (
+      lower.includes('park') ||
+      lower.includes('rail') ||
+      lower.includes('train') ||
+      lower.includes('transit') ||
+      lower.includes('ev ') ||
+      lower.includes('charging') ||
+      lower.includes('shuttle') ||
+      lower.includes('transport')
+    ) {
+      const parking = await repository.getParking();
+      const lot4 = parking.find((p) => p.lotId === 'lot-4-general') || parking[0];
+      const lot1 = parking.find((p) => p.lotId === 'lot-1-vip') || parking[1];
+      const isSpanish = language === 'es';
+      const targetLang: LanguageCode = isSpanish ? 'es' : language;
+      if (isSpanish) {
+        return {
+          responseText: `Para estacionamiento, el Lote 4 (junto al hub de trenes) está ${lot4?.status === 'NEAR_CAPACITY' ? 'casi lleno' : 'abierto'} con ${lot4 ? lot4.occupiedSpaces : 0}/${lot4 ? lot4.totalSpaces : 0} espacios ocupados. El shuttle conecta con la Puerta C (actualmente ${gateC.currentWaitMinutes} min de espera). Si necesitas carga de EV, el Lote 1 (VIP) tiene carga disponible y está solo ${lot1 ? lot1.occupiedSpaces : 0}/${lot1 ? lot1.totalSpaces : 0} ocupado. Recomiendo la Puerta D para evitar el congestionamiento del tren.`,
+          suggestedAction: {
+            type: 'NAVIGATE',
+            targetId: lot1?.lotId ?? 'lot-1-vip',
+            label: `Ir a ${lot1?.name ?? 'Lot 1'}`,
+          },
+          estimatedWaitMinutes: gateD.currentWaitMinutes,
+          translatedLanguage: targetLang,
+          engine: 'simulated',
+        };
+      }
+      return {
+        responseText: `For parking, Lot 4 (next to the commuter rail hub) is ${lot4?.status === 'NEAR_CAPACITY' ? 'near capacity' : 'open'} with ${lot4 ? lot4.occupiedSpaces : 0}/${lot4 ? lot4.totalSpaces : 0} spaces taken — the shuttle connects to Gate C (currently ${gateC.currentWaitMinutes} min wait, congested from rail arrivals). If you need EV charging, Lot 1 (VIP & Accessible) has chargers available and is only ${lot1 ? lot1.occupiedSpaces : 0}/${lot1 ? lot1.totalSpaces : 0} occupied, with a shuttle to Gate A (8 min wait). I recommend Gate D for entry to avoid the rail congestion — step-free and only ${gateD.currentWaitMinutes} min wait.`,
+        suggestedAction: {
+          type: 'NAVIGATE',
+          targetId: lot1?.lotId ?? 'lot-1-vip',
+          label: `Navigate to ${lot1?.name ?? 'Lot 1'}`,
+        },
+        estimatedWaitMinutes: gateD.currentWaitMinutes,
+        translatedLanguage: language,
+        engine: 'simulated',
+      };
+    }
+
     // Default
     return {
       responseText: `Hi! I'm your FIFA Smart Stadium Copilot. I can help you find the fastest gate, step-free accessible routes, or the nearest concessions. Right now Gate C is the slowest entry at ${gateC.currentWaitMinutes} min, while Gate D is the fastest at ${gateD.currentWaitMinutes} min.`,
@@ -185,7 +227,7 @@ export class SimulatedGeminiEngine implements IGeminiClient {
           'Broadcast 8-language PA announcement redirecting Sectors 101-115 ticket holders to Gate D.',
           'Update digital perimeter displays at commuter rail exit to point towards Gate D.',
         ],
-        executiveSummary: `**What-If Simulation**: Redirecting commuter-rail ingress from Gate C (currently ${gateC?.turnstileVelocityPerMin ?? 340}/min, ${gateC?.currentWaitMinutes ?? 42} min wait) to Gate D auxiliary turnstiles will reduce the overall gate bottleneck by ~35% within 12 minutes. Average wait drops to ~14 min, shifting concourse risk from RED to YELLOW/GREEN. Gate D current load is only ${gateD?.currentVelocityPerMin ?? 110}/min so it can absorb the surge.`,
+        executiveSummary: `**What-If Simulation**: Redirecting commuter-rail ingress from Gate C (currently ${gateC?.turnstileVelocityPerMin ?? 340}/min, ${gateC?.currentWaitMinutes ?? 42} min wait) to Gate D auxiliary turnstiles will reduce the overall gate bottleneck by ~35% within 12 minutes. Average wait drops to ~14 min, shifting concourse risk from RED to YELLOW/GREEN. Gate D current load is only ${gateD?.turnstileVelocityPerMin ?? 110}/min so it can absorb the surge.`,
         riskSeverityAfter: 3,
         engine: 'simulated',
       };

@@ -40,7 +40,7 @@ export type CollectionName = keyof SeedDatabase;
 
 class StadiumRepository {
   private memoryDb: SeedDatabase;
-  private listeners: Map<CollectionName, Set<(data: unknown) => void>> = new Map();
+  private listeners: Map<CollectionName, Set<(data: unknown[]) => void>> = new Map();
   private seq = 0;
 
   constructor() {
