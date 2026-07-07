@@ -10,34 +10,29 @@ const STORAGE_KEY = 'fifa_kickoff_seen';
  * trophy, and the overlay fades. Skipped if already seen this session or
  * if the user prefers reduced motion.
  *
- * Mount this once at the top of the home page.
+ * IMPORTANT: The decision to show the overlay is deferred to a `useEffect`
+ * so the FIRST client render always matches the server render (both render
+ * `null`). This avoids the React hydration mismatch that would otherwise
+ * occur because `sessionStorage` / `window.matchMedia` are only available
+ * in the browser.
  */
 export const KickoffIntro: React.FC = () => {
-  // Decide whether to mount the overlay lazily on first client render so we
-  // don't need a setState-in-effect.
-  const [show] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     try {
-      if (sessionStorage.getItem(STORAGE_KEY) === '1') return false;
+      if (sessionStorage.getItem(STORAGE_KEY) === '1') return;
+      sessionStorage.setItem(STORAGE_KEY, '1');
     } catch {
       /* sessionStorage can throw in some privacy modes — fail open */
     }
-    try {
-      sessionStorage.setItem(STORAGE_KEY, '1');
-    } catch {
-      /* noop */
-    }
-    return true;
-  });
-
-  const [mounted, setMounted] = useState(show);
-
-  useEffect(() => {
-    if (!show) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sessionStorage + matchMedia are client-only, must run after hydration to avoid SSR mismatch
+    setMounted(true);
     const t = setTimeout(() => setMounted(false), 2100);
     return () => clearTimeout(t);
-  }, [show]);
+  }, []);
 
   if (!mounted) return null;
 

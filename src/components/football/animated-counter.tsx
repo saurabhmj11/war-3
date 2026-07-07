@@ -36,17 +36,25 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   scoreboard = true,
   className = '',
 }) => {
-  // Reduce-motion users see the final value immediately (lazy init so no
-  // setState-in-effect is needed).
-  const reduceMotion =
-    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const [display, setDisplay] = useState<number>(() => (reduceMotion ? value : 0));
-  const [popped, setPopped] = useState<boolean>(reduceMotion);
+  // Always start with `display = 0` and `popped = false` so the server
+  // render matches the first client render. The actual reduce-motion check
+  // and count-up happen in the `useEffect` below, which runs only after
+  // hydration — avoiding any hydration mismatch.
+  const [display, setDisplay] = useState<number>(0);
+  const [popped, setPopped] = useState<boolean>(false);
   const ref = useRef<HTMLSpanElement | null>(null);
   const started = useRef(false);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    // If the user prefers reduced motion, snap to the final value immediately.
+    const reduceMotion =
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: matchMedia is client-only, must run after hydration to avoid SSR mismatch
+      setDisplay(value);
+      setPopped(true);
+      return;
+    }
     const el = ref.current;
     if (!el) return;
 
@@ -76,7 +84,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [value, duration, reduceMotion]);
+  }, [value, duration]);
 
   const formatted = display.toLocaleString(locale, {
     minimumFractionDigits: decimals,

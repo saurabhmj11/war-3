@@ -11,14 +11,21 @@ import React, { useEffect, useRef, useState } from 'react';
  * Purely decorative — pointer-events: none, no impact on UX or a11y.
  */
 export const FootballCompanion: React.FC = () => {
-  // Compute "should this render at all?" lazily on first client render so we
-  // never need a setState-in-effect just to flip a boolean.
-  const [enabled] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
+  // Always start as `false` so the server render matches the first client
+  // render (both render `null`). The actual feature detection happens in
+  // a `useEffect` after hydration, which flips `enabled` to `true` if the
+  // browser has a fine pointer and no reduced-motion preference.
+  const [enabled, setEnabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const isTouch = window.matchMedia('(pointer: coarse)').matches;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    return !isTouch && !reduceMotion;
-  });
+    if (!isTouch && !reduceMotion) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: matchMedia is client-only, must run after hydration to avoid SSR mismatch
+      setEnabled(true);
+    }
+  }, []);
 
   const ballRef = useRef<HTMLDivElement | null>(null);
   const target = useRef({ x: 0, y: 0 });
