@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions for Role-Based Access Control (RBAC) via Firebase Auth Custom Claims
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function hasRole(role) {
+      return isAuthenticated() && (request.auth.token.role == role || request.auth.token.role == 'ADMIN');
+    }
+    
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) || hasRole('ADMIN');
+    }
+    
+    // 2. Roles Collection
+    match /roles/{roleId} {
+      allow read: if true;
+      allow write: if hasRole('ADMIN');
+    }
+
+    // 3. Stadiums, Gates, Seats, Routes, Parking, FoodVendors, Restrooms, AccessibilityRoutes
+    match /stadiums/{stadiumId} { allow read: if true; allow write: if hasRole('OPERATIONS'); }
+    match /gates/{gateId} { allow read: if true; allow write: if hasRole('OPERATIONS'); }
+    match /seats/{seatId} { allow read: if true; allow write: if hasRole('OPERATIONS'); }
+    match /routes/{routeId} { allow read: if true; allow write: if hasRole('OPERATIONS'); }
+    match /parking/{lotId} { allow read: if true; allow write: if hasRole('OPERATIONS'); }
+    match /foodVendors/{vendorId} { allow read: if true; allow write: if hasRole('OPERATIONS'); }
+    match /restrooms/{restroomId} { allow read: if true; allow write: if hasRole('OPERATIONS'); }
+    match /accessibilityRoutes/{routeId} { allow read: if true; allow write: if hasRole('OPERATIONS') || hasRole('MEDICAL'); }
+
+    // 4. Incidents Collection
+    match /incidents/{incidentId} {
+      allow read: if hasRole('VOLUNTEER') || hasRole('OPERATIONS') || hasRole('SECURITY') || hasRole('MEDICAL');
+      allow create: if isAuthenticated();
+      allow update: if hasRole('VOLUNTEER') || hasRole('OPERATIONS') || hasRole('SECURITY') || hasRole('MEDICAL');
+      allow delete: if hasRole('ADMIN');
+    }
+
+    // 5. CrowdMetrics Collection
+    match /crowdMetrics/{metricId} {
+      allow read: if true;
+      allow write: if hasRole('OPERATIONS') || hasRole('SECURITY');
+    }
+
+    // 6. Volunteers & Tasks
+    match /volunteers/{volunteerId} {
+      allow read: if hasRole('VOLUNTEER') || hasRole('OPERATIONS');
+      allow write: if hasRole('OPERATIONS') || (hasRole('VOLUNTEER') && request.auth.uid == resource.data.uid);
+    }
+    
+    match /tasks/{taskId} {
+      allow read: if hasRole('VOLUNTEER') || hasRole('OPERATIONS');
+      allow write: if hasRole('OPERATIONS') || hasRole('VOLUNTEER');
+    }
+
+    // 7. Announcements & Notifications
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if hasRole('OPERATIONS') || hasRole('SECURITY') || hasRole('MEDICAL');
+    }
+    
+    match /notifications/{notifId} {
+      allow read, update: if isAuthenticated() && request.auth.uid == resource.data.recipientUid;
+      allow create: if hasRole('OPERATIONS') || hasRole('SECURITY') || hasRole('MEDICAL');
+    }
+
+    // 8. AI Sessions
+    match /aiSessions/{sessionId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == resource.data.uid;
+      allow read: if hasRole('OPERATIONS') || hasRole('ADMIN');
+    }
+
+    // 9. Analytics & Audit Logs
+    match /analytics/{analyticsId} {
+      allow read: if hasRole('OPERATIONS') || hasRole('ADMIN');
+      allow write: if hasRole('OPERATIONS');
+    }
+    
+    match /auditLogs/{auditId} {
+      allow read: if hasRole('ADMIN');
+      allow write: if false; // Only written via secure backend service / Cloud Functions
+    }
+  }
+}
