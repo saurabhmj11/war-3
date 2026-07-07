@@ -76,7 +76,6 @@ export const WhatIfSandbox: React.FC = () => {
     if (!simResult || isApplying) return;
     setIsApplying(true);
     try {
-      // Act 4 applies the What-If rerouting to live state.
       await api.triggerAct(4);
       setAppliedSuccess(true);
     } catch (err) {
@@ -105,32 +104,33 @@ export const WhatIfSandbox: React.FC = () => {
     <div className="w-full space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Configuration */}
-        <div className="lg:col-span-6 w-full bg-slate-900/90 border border-slate-800/80 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="lg:col-span-6 w-full card-floodlit ref-card-gold rounded-xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
+          <div className="absolute inset-0 pitch-stripes opacity-10" aria-hidden="true" />
+          <div className="flex items-center justify-between border-b border-emerald-900/50 pb-4 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/20" aria-hidden="true">
-                <Sparkles className="w-5 h-5 text-slate-950" />
+              <div className="w-10 h-10 rounded-md trophy-badge flex items-center justify-center shadow-lg" aria-hidden="true">
+                <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="jersey-heading text-base font-black text-white flex items-center gap-2">
                   <span>What-If Simulation Engine</span>
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-mono border ${
+                    className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold border ${
                       isGeminiLive
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                        : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                     }`}
                   >
-                    {isGeminiLive ? 'GEMINI 2.5 PRO' : 'SIMULATED'}
+                    {isGeminiLive ? '◆ GEMINI 2.5 PRO' : '◇ SIMULATED'}
                   </span>
                 </h3>
-                <p className="text-xs text-slate-400">Evaluate multi-variable interventions across live stadium telemetry</p>
+                <p className="text-xs text-emerald-100/60">Evaluate multi-variable interventions across live stadium telemetry</p>
               </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Select preset scenario:</span>
+          <div className="space-y-2 relative z-10">
+            <span className="text-[11px] font-black text-emerald-100/50 uppercase tracking-widest jersey-heading">Select preset:</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {PRESET_SCENARIOS.map((preset, idx) => (
                 <button
@@ -141,27 +141,27 @@ export const WhatIfSandbox: React.FC = () => {
                     setTargetGateId(preset.gate);
                     setDescription(preset.desc);
                   }}
-                  className="p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 text-left text-xs text-slate-300 hover:text-white transition-all shadow-sm group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                  className="p-2.5 rounded-md bg-[#03110a]/80 hover:bg-emerald-950/60 border border-emerald-900/50 text-left text-xs text-emerald-100/80 hover:text-emerald-100 transition-all shadow-sm group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                   aria-label={`Load preset: ${preset.label}`}
                 >
-                  <div className="font-bold truncate group-hover:text-amber-400">{preset.label}</div>
-                  <div className="text-[10px] text-slate-500 truncate mt-0.5">Click to configure</div>
+                  <div className="font-black truncate group-hover:text-amber-300 jersey-heading">{preset.label}</div>
+                  <div className="text-[10px] text-emerald-100/40 truncate mt-0.5">Click to configure</div>
                 </button>
               ))}
             </div>
           </div>
 
-          <form onSubmit={handleSimulate} className="space-y-4">
+          <form onSubmit={handleSimulate} className="space-y-4 relative z-10">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="whatif-intervention" className="block text-xs font-bold text-slate-400 uppercase mb-1.5">
-                  Intervention action
+                <label htmlFor="whatif-intervention" className="block text-xs font-black text-emerald-100/60 uppercase mb-1.5 tracking-widest jersey-heading">
+                  Intervention
                 </label>
                 <select
                   id="whatif-intervention"
                   value={interventionType}
                   onChange={(e) => setInterventionType(e.target.value as typeof interventionType)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full bg-[#03110a] border border-emerald-900/50 rounded-md px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
                 >
                   <option value="OPEN_AUXILIARY_GATE">Open Auxiliary Turnstiles</option>
                   <option value="CLOSE_GATE">Close Entrance Gate</option>
@@ -170,14 +170,14 @@ export const WhatIfSandbox: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="whatif-gate" className="block text-xs font-bold text-slate-400 uppercase mb-1.5">
-                  Target gate / plaza
+                <label htmlFor="whatif-gate" className="block text-xs font-black text-emerald-100/60 uppercase mb-1.5 tracking-widest jersey-heading">
+                  Target Gate
                 </label>
                 <select
                   id="whatif-gate"
                   value={targetGateId}
                   onChange={(e) => setTargetGateId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full bg-[#03110a] border border-emerald-900/50 rounded-md px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
                 >
                   <option value="gate-d">Gate D (North Auxiliary Plaza)</option>
                   <option value="gate-c">Gate C (East Rail Hub)</option>
@@ -188,8 +188,8 @@ export const WhatIfSandbox: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="whatif-description" className="block text-xs font-bold text-slate-400 uppercase mb-1.5">
-                Scenario details &amp; constraints
+              <label htmlFor="whatif-description" className="block text-xs font-black text-emerald-100/60 uppercase mb-1.5 tracking-widest jersey-heading">
+                Scenario Details
               </label>
               <textarea
                 id="whatif-description"
@@ -197,12 +197,12 @@ export const WhatIfSandbox: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Explain proposed intervention…"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs sm:text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500"
+                className="w-full bg-[#03110a] border border-emerald-900/50 rounded-md p-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/30 focus:outline-none focus:border-amber-500"
               />
             </div>
 
             {error && (
-              <div role="alert" className="rounded-xl bg-red-500/15 border border-red-500/40 text-red-300 text-xs p-3 flex items-start gap-2">
+              <div role="alert" className="rounded-md bg-red-500/15 border border-red-500/40 text-red-300 text-xs p-3 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                 <span>{error}</span>
               </div>
@@ -211,10 +211,10 @@ export const WhatIfSandbox: React.FC = () => {
             <button
               type="submit"
               disabled={!description.trim() || isSimulating}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 hover:from-amber-500 hover:to-red-500 text-white font-extrabold text-xs shadow-xl shadow-amber-900/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+              className="w-full py-3.5 rounded-md bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 hover:from-amber-500 hover:to-red-500 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-amber-900/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
             >
               {isSimulating ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full spin-ball" aria-hidden="true" />
               ) : (
                 <Sparkles className="w-4 h-4 fill-current" aria-hidden="true" />
               )}
@@ -226,50 +226,51 @@ export const WhatIfSandbox: React.FC = () => {
         {/* Right: Results + Summary */}
         <div className="lg:col-span-6 w-full space-y-6">
           {simResult ? (
-            <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-amber-500/50 rounded-3xl p-6 shadow-2xl space-y-5 animate-in fade-in duration-300" role="status" aria-live="polite">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div className="card-floodlit ref-card-gold rounded-xl p-6 shadow-2xl space-y-5 animate-in fade-in duration-300 relative overflow-hidden" role="status" aria-live="polite">
+              <div className="absolute inset-0 pitch-stripes opacity-10" aria-hidden="true" />
+              <div className="flex items-center justify-between border-b border-emerald-900/50 pb-4 relative z-10">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-amber-400 animate-ping" aria-hidden="true" />
-                  <h3 className="text-base font-bold text-white">Simulation Analysis Complete</h3>
+                  <span className="w-3 h-3 rounded-full bg-amber-400 live-pulse" aria-hidden="true" />
+                  <h3 className="jersey-heading text-base font-black text-white">Simulation Analysis Complete</h3>
                 </div>
-                <span className={`text-xs font-mono font-bold px-2.5 py-1 rounded-full ${simResult.engine === 'gemini' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}`}>
-                  {simResult.engine === 'gemini' ? 'GEMINI 2.5 PRO' : 'SIMULATED'} • {simResult.scenarioId.slice(-6)}
+                <span className={`text-xs font-mono font-black px-2.5 py-1 rounded-md uppercase tracking-widest ${simResult.engine === 'gemini' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}`}>
+                  {simResult.engine === 'gemini' ? '◆ GEMINI 2.5 PRO' : '◇ SIMULATED'} • {simResult.scenarioId.slice(-6)}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 text-center">
-                  <div className="text-3xl font-black text-emerald-400 font-mono flex items-center justify-center gap-1">
+              <div className="grid grid-cols-2 gap-4 relative z-10">
+                <div className="bg-[#03110a]/80 p-4 rounded-md border border-emerald-900/40 text-center">
+                  <div className="text-3xl font-black text-emerald-400 font-mono scoreboard-numeral flex items-center justify-center gap-1">
                     <TrendingDown className="w-6 h-6" aria-hidden="true" />
                     <span>-{simResult.projectedCongestionReductionPct}%</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Congestion Reduction</div>
+                  <div className="text-[11px] text-emerald-100/60 uppercase tracking-widest font-black mt-1 jersey-heading">Congestion Reduction</div>
                 </div>
-                <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 text-center">
-                  <div className="text-3xl font-black text-white font-mono">
-                    {simResult.newEstimatedWaitMinutes} <span className="text-sm font-normal text-slate-400">min</span>
+                <div className="bg-[#03110a]/80 p-4 rounded-md border border-emerald-900/40 text-center">
+                  <div className="text-3xl font-black text-white font-mono scoreboard-numeral">
+                    {simResult.newEstimatedWaitMinutes} <span className="text-sm font-normal text-emerald-100/40">min</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mt-1">Projected New Wait Time</div>
+                  <div className="text-[11px] text-emerald-100/60 uppercase tracking-widest font-black mt-1 jersey-heading">Projected Wait Time</div>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Affected stadium sectors:</span>
+              <div className="space-y-2 relative z-10">
+                <span className="text-xs font-black text-emerald-100/60 uppercase tracking-widest jersey-heading">Affected Sectors:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {simResult.affectedSectors.map((sec, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded-lg bg-slate-800 text-emerald-300 text-xs font-mono font-bold border border-emerald-500/20">
-                      Sector {sec}
+                    <span key={i} className="px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-300 text-xs font-mono font-black border border-emerald-700/40 tracking-widest">
+                      SEC {sec}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">AI recommended action plan:</span>
+              <div className="space-y-2 relative z-10">
+                <span className="text-xs font-black text-emerald-100/60 uppercase tracking-widest jersey-heading">AI Recommended Action Plan:</span>
                 <ol className="space-y-1.5">
                   {simResult.recommendedActions.map((act, i) => (
-                    <li key={i} className="text-xs text-slate-300 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-md bg-amber-500/20 text-amber-300 font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    <li key={i} className="text-xs text-emerald-100/80 bg-[#03110a]/60 p-2.5 rounded-md border border-emerald-900/40 flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-md bg-amber-500/20 text-amber-300 font-mono font-black flex items-center justify-center shrink-0 mt-0.5 scoreboard-numeral">
                         {i + 1}
                       </span>
                       <span>{act}</span>
@@ -278,47 +279,49 @@ export const WhatIfSandbox: React.FC = () => {
                 </ol>
               </div>
 
-              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 font-mono text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+              <div className="bg-[#03110a] p-4 rounded-md border border-emerald-900/40 font-mono text-xs text-emerald-100/80 leading-relaxed whitespace-pre-line relative z-10">
                 {simResult.executiveSummary}
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 relative z-10">
                 {appliedSuccess ? (
-                  <div className="w-full py-3.5 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2" role="status">
+                  <div className="w-full py-3.5 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black flex items-center justify-center gap-2 uppercase tracking-widest" role="status">
                     <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
-                    <span>Simulation applied to live venue state! Heatmap updated across all dashboards.</span>
+                    <span>Applied to Live Stadium! All dashboards updated.</span>
                   </div>
                 ) : (
                   <button
                     type="button"
                     onClick={handleApply}
                     disabled={isApplying}
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-xl shadow-emerald-900/40 transition-all flex items-center justify-center gap-2 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                    className="w-full py-3.5 rounded-md bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-[#03110a] font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-900/40 transition-all flex items-center justify-center gap-2 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
                   >
                     {isApplying ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full spin-ball" aria-hidden="true" />
                     ) : (
                       <Play className="w-4 h-4 fill-current" aria-hidden="true" />
                     )}
-                    <span>Apply Simulation to Live Stadium State</span>
+                    <span>Apply to Live Stadium</span>
                   </button>
                 )}
               </div>
             </div>
           ) : (
-            <div className="bg-slate-900/50 border border-slate-800/60 rounded-3xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[360px] text-slate-500 space-y-3">
-              <Sparkles className="w-10 h-10 text-slate-700 animate-pulse" aria-hidden="true" />
-              <div className="text-sm font-bold text-slate-400">No Active Simulation Running</div>
-              <p className="text-xs max-w-xs">
+            <div className="card-floodlit rounded-xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[360px] text-emerald-100/40 space-y-3 relative overflow-hidden">
+              <div className="absolute inset-0 pitch-stripes opacity-15" aria-hidden="true" />
+              <Sparkles className="w-10 h-10 text-emerald-700 animate-pulse relative z-10" aria-hidden="true" />
+              <div className="text-sm font-black text-emerald-100/60 jersey-heading relative z-10">No Active Simulation Running</div>
+              <p className="text-xs max-w-xs relative z-10">
                 Select a preset scenario on the left or type a custom intervention to test Gemini 2.5 Pro reasoning!
               </p>
             </div>
           )}
 
           {/* Executive Summary */}
-          <div className="bg-slate-900/90 border border-slate-800/80 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 gap-3">
-              <div className="flex items-center gap-2 text-white font-bold text-sm">
+          <div className="card-floodlit rounded-xl p-6 shadow-2xl space-y-4 relative overflow-hidden">
+            <div className="absolute inset-0 pitch-stripes opacity-10" aria-hidden="true" />
+            <div className="flex items-center justify-between border-b border-emerald-900/50 pb-3 gap-3 relative z-10">
+              <div className="flex items-center gap-2 text-white font-black text-sm jersey-heading">
                 <FileText className="w-5 h-5 text-emerald-400" aria-hidden="true" />
                 <span>Executive Operations Summary</span>
               </div>
@@ -326,26 +329,26 @@ export const WhatIfSandbox: React.FC = () => {
                 type="button"
                 onClick={handleGenerateSummary}
                 disabled={isSummarizing}
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition-all shadow-md flex items-center gap-1.5 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                className="px-3.5 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-[#03110a] text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-1.5 disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
               >
                 {isSummarizing ? (
-                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                  <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full spin-ball" aria-hidden="true" />
                 ) : (
                   <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
                 )}
-                <span>Generate Report (&lt;5s)</span>
+                <span>Generate (&lt;5s)</span>
               </button>
             </div>
             {summary ? (
-              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 font-mono text-xs text-slate-300 leading-relaxed whitespace-pre-line max-h-80 overflow-y-auto">
-                <div className={`text-[10px] font-bold mb-2 ${summary.engine === 'gemini' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  Generated by: {summary.engine === 'gemini' ? 'Real Google Gemini 2.5 Pro' : 'Simulated fallback engine'}
+              <div className="bg-[#03110a] p-4 rounded-md border border-emerald-900/40 font-mono text-xs text-emerald-100/80 leading-relaxed whitespace-pre-line max-h-80 overflow-y-auto scrollbar-pitch relative z-10">
+                <div className={`text-[10px] font-black mb-2 uppercase tracking-widest ${summary.engine === 'gemini' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {summary.engine === 'gemini' ? '◆ Real Google Gemini 2.5 Pro' : '◇ Simulated fallback engine'}
                 </div>
                 {summary.markdown}
               </div>
             ) : (
-              <div className="text-center py-6 text-xs text-slate-500">
-                Click "Generate Report" to let Gemini synthesize live telemetry into an executive audit report!
+              <div className="text-center py-6 text-xs text-emerald-100/40 relative z-10">
+                Click "Generate" to let Gemini synthesize live telemetry into an executive audit report!
               </div>
             )}
           </div>

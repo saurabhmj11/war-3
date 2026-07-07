@@ -93,33 +93,34 @@ export const IncidentReporter: React.FC = () => {
   };
 
   const getSeverityBadge = (sev: number) => {
-    if (sev >= 8) return { bg: 'bg-red-500/20 text-red-300 border-red-500/30', label: `SEV ${sev} • CRITICAL` };
-    if (sev >= 5) return { bg: 'bg-amber-500/20 text-amber-300 border-amber-500/30', label: `SEV ${sev} • ELEVATED` };
-    return { bg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', label: `SEV ${sev} • LOW` };
+    if (sev >= 8) return { bg: 'bg-red-500/20 text-red-300 border-red-500/40', label: `SEV ${sev} • CRITICAL` };
+    if (sev >= 5) return { bg: 'bg-amber-500/20 text-amber-300 border-amber-500/40', label: `SEV ${sev} • ELEVATED` };
+    return { bg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', label: `SEV ${sev} • LOW` };
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* Left Column: Multimodal Incident Reporter */}
       <div className="lg:col-span-6 w-full space-y-6">
-        <div className="bg-slate-900/90 border border-slate-800/80 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="card-floodlit ref-card-yellow rounded-xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
+          <div className="absolute inset-0 pitch-stripes opacity-10" aria-hidden="true" />
+          <div className="flex items-center justify-between border-b border-emerald-900/50 pb-4 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-sky-500/20" aria-hidden="true">
-                <Camera className="w-5 h-5 text-slate-950" />
+              <div className="w-10 h-10 rounded-md bg-gradient-to-br from-sky-500 to-cyan-600 flex items-center justify-center text-white font-black shadow-lg shadow-sky-500/20" aria-hidden="true">
+                <Camera className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="jersey-heading text-base font-black text-white flex items-center gap-2">
                   <span>Multimodal Incident Reporter</span>
-                  <span className="text-[10px] bg-sky-500/20 text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded-full font-mono">GEMINI VISION</span>
+                  <span className="text-[10px] bg-sky-500/20 text-sky-300 border border-sky-500/40 px-2 py-0.5 rounded-md font-mono font-bold">GEMINI VISION</span>
                 </h3>
-                <p className="text-xs text-slate-400">Snap photos or record voice notes; AI auto-grades severity & routes triage</p>
+                <p className="text-xs text-emerald-100/60">Snap photos or record voice notes; AI auto-grades severity &amp; routes triage</p>
               </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Quick test scenarios (simulate camera upload):</span>
+          <div className="space-y-2 relative z-10">
+            <span className="text-[11px] font-black text-emerald-100/50 uppercase tracking-widest jersey-heading">Quick test scenarios:</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {SAMPLE_PHOTOS.map((sample, idx) => (
                 <button
@@ -129,27 +130,27 @@ export const IncidentReporter: React.FC = () => {
                     setPhotoUrl(sample.url);
                     setDescription(sample.desc);
                   }}
-                  className="p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 text-left text-xs text-slate-300 hover:text-white transition-all shadow-sm group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                  className="p-2.5 rounded-md bg-[#03110a]/80 hover:bg-sky-950/40 border border-emerald-900/50 text-left text-xs text-emerald-100/80 hover:text-white transition-all shadow-sm group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
                   aria-label={`Load sample scenario: ${sample.label}`}
                 >
-                  <div className="font-bold truncate group-hover:text-sky-400">{sample.label}</div>
-                  <div className="text-[10px] text-slate-500 truncate mt-0.5">Click to load photo</div>
+                  <div className="font-black truncate group-hover:text-sky-300 jersey-heading">{sample.label}</div>
+                  <div className="text-[10px] text-emerald-100/40 truncate mt-0.5">Click to load photo</div>
                 </button>
               ))}
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="incident-sector" className="block text-xs font-bold text-slate-400 uppercase mb-1.5">
+                <label htmlFor="incident-sector" className="block text-xs font-black text-emerald-100/60 uppercase mb-1.5 tracking-widest jersey-heading">
                   Sector / Concourse
                 </label>
                 <select
                   id="incident-sector"
                   value={sector}
                   onChange={(e) => setSector(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500"
+                  className="w-full bg-[#03110a] border border-emerald-900/50 rounded-md px-3 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500"
                 >
                   <option value="112">Sector 112 (Lower Bowl)</option>
                   <option value="110">Sector 110 (Lower Bowl)</option>
@@ -159,7 +160,7 @@ export const IncidentReporter: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="incident-photo" className="block text-xs font-bold text-slate-400 uppercase mb-1.5">
+                <label htmlFor="incident-photo" className="block text-xs font-black text-emerald-100/60 uppercase mb-1.5 tracking-widest jersey-heading">
                   Photo URL (optional)
                 </label>
                 <div className="relative">
@@ -169,24 +170,24 @@ export const IncidentReporter: React.FC = () => {
                     value={photoUrl}
                     onChange={(e) => setPhotoUrl(e.target.value)}
                     placeholder="https://..."
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-[#03110a] border border-emerald-900/50 rounded-md pl-8 pr-3 py-2.5 text-xs text-white placeholder:text-emerald-100/30 focus:outline-none focus:border-sky-500"
                   />
-                  <ImageIcon className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-3" aria-hidden="true" />
+                  <ImageIcon className="w-3.5 h-3.5 text-emerald-100/40 absolute left-2.5 top-3" aria-hidden="true" />
                 </div>
               </div>
             </div>
 
             {photoUrl && (
-              <div className="relative rounded-2xl overflow-hidden border border-slate-800 max-h-40 bg-slate-950 flex items-center justify-center">
+              <div className="relative rounded-md overflow-hidden border border-emerald-900/50 max-h-40 bg-[#03110a] flex items-center justify-center">
                 <img src={photoUrl} alt="Incident preview" className="w-full h-full object-cover" />
-                <div className="absolute bottom-2 right-2 bg-slate-950/80 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-sky-400 font-mono font-bold">
-                  ⚡ READY FOR VISION ANALYSIS
+                <div className="absolute bottom-2 right-2 bg-[#03110a]/90 backdrop-blur-md px-2 py-1 rounded-md text-[10px] text-sky-300 font-mono font-black tracking-widest">
+                  ⚡ READY FOR VISION
                 </div>
               </div>
             )}
 
             <div>
-              <label htmlFor="incident-description" className="block text-xs font-bold text-slate-400 uppercase mb-1.5">
+              <label htmlFor="incident-description" className="block text-xs font-black text-emerald-100/60 uppercase mb-1.5 tracking-widest jersey-heading">
                 Incident description
               </label>
               <textarea
@@ -195,12 +196,12 @@ export const IncidentReporter: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe what you see or transcribe radio report…"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs sm:text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-sky-500"
+                className="w-full bg-[#03110a] border border-emerald-900/50 rounded-md p-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/30 focus:outline-none focus:border-sky-500"
               />
             </div>
 
             {error && (
-              <div role="alert" className="rounded-xl bg-red-500/15 border border-red-500/40 text-red-300 text-xs p-3 flex items-start gap-2">
+              <div role="alert" className="rounded-md bg-red-500/15 border border-red-500/40 text-red-300 text-xs p-3 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                 <span>{error}</span>
               </div>
@@ -209,44 +210,44 @@ export const IncidentReporter: React.FC = () => {
             <button
               type="submit"
               disabled={!description.trim() || isSubmitting}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-sky-900/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+              className="w-full py-3 rounded-md bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-900/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-98 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
             >
               {isSubmitting ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full spin-ball" aria-hidden="true" />
               ) : (
                 <Sparkles className="w-4 h-4 fill-current" aria-hidden="true" />
               )}
-              <span>Analyze &amp; Submit to Command Center</span>
+              <span>Analyze &amp; Submit</span>
             </button>
           </form>
 
           {lastClassification && (
-            <div className="bg-gradient-to-r from-sky-950/60 to-cyan-950/60 border border-sky-500/40 rounded-2xl p-4 shadow-xl space-y-3 animate-in fade-in duration-300" role="status" aria-live="polite">
+            <div className="bg-gradient-to-r from-sky-950/60 to-cyan-950/60 border border-sky-500/40 rounded-md p-4 shadow-xl space-y-3 animate-in fade-in duration-300 relative z-10" role="status" aria-live="polite">
               <div className="flex items-center justify-between border-b border-sky-500/30 pb-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-sky-300">
+                <div className="flex items-center gap-2 text-xs font-black text-sky-300 jersey-heading">
                   <Sparkles className="w-4 h-4 text-sky-400 animate-spin" style={{ animationDuration: '6s' }} aria-hidden="true" />
-                  <span>{lastClassification.engine === 'gemini' ? 'Gemini Vision' : 'Simulated'} Classification Result</span>
+                  <span>{lastClassification.engine === 'gemini' ? 'GEMINI VISION' : 'SIMULATED'} CLASSIFICATION</span>
                 </div>
-                <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${getSeverityBadge(lastClassification.estimatedSeverity).bg}`}>
+                <span className={`text-[10px] font-mono font-black px-2 py-0.5 rounded-md border tracking-widest uppercase ${getSeverityBadge(lastClassification.estimatedSeverity).bg}`}>
                   {getSeverityBadge(lastClassification.estimatedSeverity).label}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">Routed Team:</span>
-                  <span className="font-bold text-white uppercase">{lastClassification.requiredTeam}</span>
+                <div className="bg-[#03110a]/60 p-2 rounded-md border border-emerald-900/40">
+                  <span className="text-emerald-100/50 block text-[10px] uppercase font-bold tracking-widest">Routed Team:</span>
+                  <span className="font-black text-white uppercase jersey-heading">{lastClassification.requiredTeam}</span>
                 </div>
-                <div className="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
-                  <span className="text-slate-400 block text-[10px]">Incident Type:</span>
-                  <span className="font-bold text-cyan-400">{lastClassification.incidentType}</span>
+                <div className="bg-[#03110a]/60 p-2 rounded-md border border-emerald-900/40">
+                  <span className="text-emerald-100/50 block text-[10px] uppercase font-bold tracking-widest">Incident Type:</span>
+                  <span className="font-black text-cyan-300 jersey-heading">{lastClassification.incidentType}</span>
                 </div>
               </div>
-              <div className="text-xs text-slate-200 bg-slate-950/80 p-3 rounded-xl border border-slate-800 leading-relaxed font-mono">
+              <div className="text-xs text-emerald-100/90 bg-[#03110a]/80 p-3 rounded-md border border-emerald-900/40 leading-relaxed font-mono">
                 {lastClassification.aiSummary}
               </div>
-              <div className="text-[11px] text-emerald-400 font-bold flex items-center gap-1.5">
+              <div className="text-[11px] text-emerald-400 font-black flex items-center gap-1.5 uppercase tracking-widest">
                 <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Ticket logged & dispatched to {lastClassification.requiredTeam} triage!</span>
+                <span>Ticket logged &amp; dispatched to {lastClassification.requiredTeam}!</span>
               </div>
             </div>
           )}
@@ -255,46 +256,47 @@ export const IncidentReporter: React.FC = () => {
 
       {/* Right Column: Tasks + Incident Feed */}
       <div className="lg:col-span-6 w-full space-y-6">
-        <div className="bg-slate-900/90 border border-slate-800/80 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+        <div className="card-floodlit rounded-xl p-6 shadow-2xl space-y-4 relative overflow-hidden">
+          <div className="absolute inset-0 pitch-stripes opacity-10" aria-hidden="true" />
+          <div className="flex items-center justify-between border-b border-emerald-900/50 pb-3 relative z-10">
+            <h3 className="jersey-heading text-base font-black text-white flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-sky-400" aria-hidden="true" />
               <span>Assigned Shift Checklists</span>
             </h3>
-            <span className="text-xs text-slate-400 font-mono">ELENA ROSTOVA • VOL-881</span>
+            <span className="text-xs text-emerald-100/50 font-mono tracking-widest uppercase">ELENA • VOL-881</span>
           </div>
-          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-1 scrollbar-pitch relative z-10">
             {tasks.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-500">No pending shift tasks assigned.</div>
+              <div className="text-center py-6 text-xs text-emerald-100/40">No pending shift tasks assigned.</div>
             ) : (
               tasks.map((task) => (
                 <div
                   key={task.taskId}
-                  className={`p-4 rounded-2xl border transition-all ${
+                  className={`p-4 rounded-md border transition-all ${
                     task.priority === 'URGENT'
                       ? 'bg-red-950/20 border-red-500/40 shadow-lg shadow-red-500/5'
-                      : 'bg-slate-950/60 border-slate-800/80'
+                      : 'bg-[#03110a]/80 border-emerald-900/40'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md ${task.priority === 'URGENT' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-sky-500/20 text-sky-300'}`}>
+                    <span className={`text-[10px] font-mono font-black px-2 py-0.5 rounded-md tracking-widest uppercase ${task.priority === 'URGENT' ? 'bg-red-500/20 text-red-300 border border-red-500/40' : 'bg-sky-500/20 text-sky-300 border border-sky-500/40'}`}>
                       {task.priority} PRIORITY
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">ID: {task.taskId}</span>
+                    <span className="text-[10px] text-emerald-100/40 font-mono">{task.taskId}</span>
                   </div>
-                  <h4 className="text-sm font-extrabold text-white">{task.title}</h4>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">{task.description}</p>
-                  <div className="mt-3 space-y-1.5 border-t border-slate-800/80 pt-3">
+                  <h4 className="text-sm font-black text-white jersey-heading">{task.title}</h4>
+                  <p className="text-xs text-emerald-100/60 mt-1 leading-relaxed">{task.description}</p>
+                  <div className="mt-3 space-y-1.5 border-t border-emerald-900/40 pt-3">
                     {task.checklist.map((item, idx) => (
-                      <label key={idx} className="flex items-center gap-2.5 text-xs text-slate-300 cursor-pointer hover:text-white p-1.5 rounded-lg hover:bg-slate-900/60 transition-all">
+                      <label key={idx} className="flex items-center gap-2.5 text-xs text-emerald-100/80 cursor-pointer hover:text-white p-1.5 rounded-md hover:bg-emerald-950/40 transition-all">
                         <input
                           type="checkbox"
                           checked={item.completed}
                           onChange={() => handleTaskCheck(task, idx)}
                           disabled={taskUpdatingId === task.taskId}
-                          className="w-4 h-4 rounded border-slate-700 text-sky-600 focus:ring-0 bg-slate-950"
+                          className="w-4 h-4 rounded border-emerald-700 text-sky-600 focus:ring-0 bg-[#03110a]"
                         />
-                        <span className={item.completed ? 'line-through text-slate-500' : ''}>{item.item}</span>
+                        <span className={item.completed ? 'line-through text-emerald-100/40' : ''}>{item.item}</span>
                       </label>
                     ))}
                   </div>
@@ -304,26 +306,27 @@ export const IncidentReporter: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-slate-900/90 border border-slate-800/80 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+        <div className="card-floodlit rounded-xl p-6 shadow-2xl space-y-4 relative overflow-hidden">
+          <div className="absolute inset-0 pitch-stripes opacity-10" aria-hidden="true" />
+          <div className="flex items-center justify-between border-b border-emerald-900/50 pb-3 relative z-10">
+            <h3 className="jersey-heading text-base font-black text-white flex items-center gap-2">
               <ShieldAlert className="w-5 h-5 text-amber-400" aria-hidden="true" />
               <span>Live Incident Ticket Feed</span>
             </h3>
-            <span className="text-xs text-slate-400 font-mono">REAL-TIME SSE SYNC</span>
+            <span className="text-xs text-emerald-100/50 font-mono tracking-widest uppercase">REAL-TIME SSE</span>
           </div>
-          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-1 scrollbar-pitch relative z-10">
             {recentIncidents.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-500">No incidents reported.</div>
+              <div className="text-center py-6 text-xs text-emerald-100/40">No incidents reported.</div>
             ) : (
               recentIncidents.map((inc) => {
                 const badge = getSeverityBadge(inc.severity);
                 return (
-                  <div key={inc.incidentId} className="bg-slate-950/80 border border-slate-800/80 p-3.5 rounded-2xl space-y-2">
+                  <div key={inc.incidentId} className="bg-[#03110a]/80 border border-emerald-900/40 p-3.5 rounded-md space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border ${badge.bg}`}>{badge.label}</span>
-                      <span className="text-[10px] font-mono text-slate-500">
-                        Sector {inc.location.sector} • {inc.status}
+                      <span className={`text-[10px] font-mono font-black px-2 py-0.5 rounded-md border tracking-widest uppercase ${badge.bg}`}>{badge.label}</span>
+                      <span className="text-[10px] font-mono text-emerald-100/40">
+                        SEC {inc.location.sector} • {inc.status}
                       </span>
                     </div>
                     <div className="text-xs font-bold text-white flex items-center gap-1.5">
@@ -334,7 +337,7 @@ export const IncidentReporter: React.FC = () => {
                       <span>{inc.incidentType}: {inc.description}</span>
                     </div>
                     {inc.aiSummary && (
-                      <div className="text-[11px] text-slate-400 bg-slate-900 p-2 rounded-xl border border-slate-800 font-mono">{inc.aiSummary}</div>
+                      <div className="text-[11px] text-emerald-100/70 bg-[#0a1f15] p-2 rounded-md border border-emerald-900/40 font-mono">{inc.aiSummary}</div>
                     )}
                   </div>
                 );
