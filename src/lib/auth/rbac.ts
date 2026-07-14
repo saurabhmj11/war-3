@@ -1,6 +1,14 @@
 import { UserRole, RolePermission } from '@/domain/types';
 import { SEED_DATA } from '@/lib/db/seed-data';
 
+/**
+ * Static lookup map from `UserRole` → its full `RolePermission` config,
+ * sourced from the seed data (single source of truth for permissions,
+ * dashboards, and UI display metadata).
+ *
+ * Prefer `hasPermission()` over direct access when checking capabilities
+ * to ensure ADMIN's full-access override is always honoured.
+ */
 export const ROLE_PERMISSIONS_MAP: Record<UserRole, RolePermission> = {
   FAN: SEED_DATA.roles.find((r) => r.roleId === 'FAN')!,
   VOLUNTEER: SEED_DATA.roles.find((r) => r.roleId === 'VOLUNTEER')!,
@@ -11,8 +19,14 @@ export const ROLE_PERMISSIONS_MAP: Record<UserRole, RolePermission> = {
 };
 
 /**
- * Returns true if the given role is allowed to perform the named permission.
- * ADMIN always returns true (full access).
+ * Returns `true` if `role` is permitted to perform `requiredPermission`.
+ *
+ * The ADMIN role always returns `true` regardless of the permission string,
+ * implementing a full-access override without enumerating every capability.
+ *
+ * @param role - The active user role to check.
+ * @param requiredPermission - The permission string, e.g. `'CREATE_INCIDENT'`.
+ * @returns `true` if the role has the permission or is ADMIN.
  */
 export function hasPermission(role: UserRole, requiredPermission: string): boolean {
   if (role === 'ADMIN') return true;
@@ -22,8 +36,15 @@ export function hasPermission(role: UserRole, requiredPermission: string): boole
 }
 
 /**
- * Returns true if the given role is allowed to view the dashboard at the
- * given pathname. ADMIN always returns true.
+ * Returns `true` if `role` is permitted to view the dashboard at `pathname`.
+ *
+ * Matching is prefix-based so `/dashboard/operations/crowd` is allowed when
+ * the role's `allowedDashboards` contains `/dashboard/operations`.
+ * The ADMIN role always returns `true`.
+ *
+ * @param role - The active user role to check.
+ * @param pathname - The Next.js pathname being accessed.
+ * @returns `true` if the role may access the given path.
  */
 export function canAccessDashboard(role: UserRole, pathname: string): boolean {
   if (role === 'ADMIN') return true;
@@ -32,7 +53,16 @@ export function canAccessDashboard(role: UserRole, pathname: string): boolean {
   return roleConfig.allowedDashboards.some((allowedPath) => pathname.startsWith(allowedPath));
 }
 
-/** Stable, copy-safe role → badge color tokens (used by both server and client). */
+/**
+ * Returns stable Tailwind CSS class tokens for the role's badge color.
+ *
+ * Values are deterministic and safe to use in both server and client
+ * components without hydration mismatches. Tokens cover background tint,
+ * foreground text color, and border color.
+ *
+ * @param role - The user role to retrieve color tokens for.
+ * @returns An object with `bg`, `text`, and `border` Tailwind class strings.
+ */
 export function getRoleBadgeColor(role: UserRole): { bg: string; text: string; border: string } {
   switch (role) {
     case 'FAN':
@@ -52,4 +82,5 @@ export function getRoleBadgeColor(role: UserRole): { bg: string; text: string; b
   }
 }
 
+/** Ordered list of all valid user roles. Use for iteration and validation. */
 export const ALL_ROLES: UserRole[] = ['FAN', 'VOLUNTEER', 'OPERATIONS', 'SECURITY', 'MEDICAL', 'ADMIN'];

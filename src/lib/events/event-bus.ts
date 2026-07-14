@@ -2,19 +2,37 @@ import 'server-only';
 import { VolunteerCopilotService } from '@/lib/ai/volunteer-copilot';
 import { OperationsCopilotService } from '@/lib/ai/ops-copilot';
 
+/**
+ * Union of all publishable event topics in the stadium event bus.
+ * Each topic maps to a specific operational domain:
+ * - `stadium.incident.created` — volunteer or AI-reported incident
+ * - `stadium.gate.congested` — threshold-triggered gate congestion alert
+ * - `stadium.simulation.act_triggered` — admin demo sequence step
+ * - `stadium.emergency.broadcast_requested` — security emergency broadcast
+ */
 export type EventTopic =
   | 'stadium.incident.created'
   | 'stadium.gate.congested'
   | 'stadium.simulation.act_triggered'
   | 'stadium.emergency.broadcast_requested';
 
+/**
+ * Typed envelope for all events flowing through the Pub/Sub bus.
+ *
+ * @template T - The shape of the event payload, specific to each topic.
+ */
 export interface StadiumEvent<T = unknown> {
+  /** Unique event identifier in `evt-<timestamp>-<nonce>` format. */
   eventId: string;
+  /** The topic this event was published to. */
   topic: EventTopic;
+  /** ISO 8601 timestamp of when the event was published. */
   timestamp: string;
+  /** Topic-specific payload data. */
   payload: T;
 }
 
+/** Async handler function signature for topic subscribers. */
 type EventHandler<T = unknown> = (event: StadiumEvent<T>) => Promise<void>;
 
 /**
@@ -30,6 +48,14 @@ class PubSubEventBus {
     this.registerDefaultWorkers();
   }
 
+  /**
+   * Subscribes a handler to the given topic.
+   *
+   * @template T - The expected payload type for this topic.
+   * @param topic - The event topic to listen to.
+   * @param handler - Async function invoked for each published event.
+   * @returns An unsubscribe function that removes this handler.
+   */
   public subscribe<T>(topic: EventTopic, handler: EventHandler<T>): () => void {
     if (!this.subscribers.has(topic)) {
       this.subscribers.set(topic, new Set());
@@ -40,6 +66,19 @@ class PubSubEventBus {
     };
   }
 
+  /**
+   * Publishes an event to all subscribers for the given topic.
+   *
+   * Handlers are invoked asynchronously after a 50 ms delay (fire-and-forget),
+   * so the caller is never blocked by downstream AI inference. Errors in
+   * handlers are caught and logged without propagating to the publisher.
+   * The last 50 events are retained in `history` for audit retrieval.
+   *
+   * @template T - The shape of the event payload.
+   * @param topic - The event topic to publish to.
+   * @param payload - The event data to deliver to subscribers.
+   * @returns The generated `eventId` string.
+   */
   public async publish<T>(topic: EventTopic, payload: T): Promise<string> {
     const eventId = `evt-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const event: StadiumEvent<T> = {
@@ -68,11 +107,27 @@ class PubSubEventBus {
     return eventId;
   }
 
+  /**
+   * Returns an immutable copy of the last 50 published events in
+   * reverse-chronological order (most recent first).
+   *
+   * @returns A shallow copy of the internal event history array.
+   */
   public getHistory(): StadiumEvent[] {
     return [...this.history];
   }
 
-  // --- Register Serverless Worker Handlers ---
+  /**
+   * Registers the built-in serverless worker handlers that run in-process.
+   *
+   * In production these would be Cloud Run functions triggered via Pub/Sub
+   * push subscriptions. Here they run in the same Node.js process for demo
+   * simplicity while preserving the same decoupled async pattern.
+   *
+   * Workers registered:
+   * - `stadium.incident.created` → AI incident classification
+   * - `stadium.gate.congested` → What-If rerouting evaluation
+   */
   private registerDefaultWorkers() {
     // Worker: Auto-classify new incidents via Gemini Vision/Text.
     // Note: the API route already classifies synchronously for instant UX feedback,

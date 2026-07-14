@@ -13,13 +13,10 @@ export default defineConfig({
      * Use a single forked worker process to avoid the Windows vitest-pool
      * timeout bug that occurs when spawning multiple jsdom workers in parallel.
      * This does not affect correctness — tests still run in isolated contexts.
+     * Note: `poolOptions` was removed in Vitest v4; options are now top-level.
      */
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    singleFork: true,
     /**
      * Increase test timeout to 30 s to accommodate async AI engine tests that
      * simulate real latency (e.g. SimulatedGeminiEngine adds 350–650 ms delays).

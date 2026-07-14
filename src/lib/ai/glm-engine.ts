@@ -46,41 +46,33 @@ const LANGUAGE_NAMES: Record<LanguageCode, string> = {
 // imported from './json-utils' — see that module for full JSDoc.
 
 /**
- * GlmEngine — calls the real Zhipu GLM API via z-ai-web-dev-sdk.
+ * Tiny LRU-ish prompt response cache keyed by a hash of (model + system + user)
+ * prompt. Caches successful GLM responses for a short TTL so repeat queries
+ * (e.g. the Fan Copilot asking "which gate is fastest?" twice in quick
+ * succession) do not re-hit the API. Cached responses are tagged
+ * `engine: 'gemini'` because they were originally produced by GLM.
  *
- * Implementation notes:
- * - All five copilot operations build grounded prompts from live stadium
- *   state (gates, crowd metrics, incidents, parking) pulled from the
- *   repository so answers are not generic.
- * - The multimodal photo classification sends the actual photo URL to
- *   `chat.completions.createVision` and parses a structured JSON response.
- * - On ANY failure (network, parse, timeout >3s), we gracefully fall back
- *   to the deterministic SimulatedGeminiEngine so the user never sees an error.
- *
- * The SDK reads credentials from /etc/.z-ai-config (or ./.z-ai-config),
- * so no env-var key is required when running in the sandbox. To force GLM
- * off and run on the simulated engine only, set ZAI_DISABLED=1.
- */
-/**
- * Tiny LRU cache for GLM responses, keyed by a hash of (model + system +
- * user) prompt. Caches only successful parses for a short TTL so repeat
- * queries (e.g. the Fan Copilot asking "which gate is fastest?" twice in a
- * row) don't re-hit the API. Cached entries are tagged `engine: 'gemini'`
- * because they were produced by GLM (just earlier).
- *
- * Disabled when ZAI_CACHE_DISABLED=1.
+ * Disabled entirely when `ZAI_CACHE_DISABLED=1` is set (maxEntries = 0).
  */
 class PromptCache {
   private map = new Map<string, { value: unknown; expires: number }>();
   private maxEntries = 64;
   private ttlMs = 60_000; // 1 minute
+
   constructor() {
     if (process.env.ZAI_CACHE_DISABLED === '1') {
       this.maxEntries = 0;
     }
   }
+
+  /**
+   * Computes a fast FNV-1a hash of a string for use as a cache key.
+   * Collision probability is negligible for prompt strings of typical length.
+   *
+   * @param s - The string to hash.
+   * @returns An 8-character lowercase hexadecimal hash string.
+   */
   private hash(s: string): string {
-    // Simple FNV-1a hash — fast, good enough for cache keys.
     let h = 0x811c9dc5;
     for (let i = 0; i < s.length; i++) {
       h ^= s.charCodeAt(i);
@@ -88,6 +80,15 @@ class PromptCache {
     }
     return (h >>> 0).toString(16);
   }
+
+  /**
+   * Retrieves a cached value by key.
+   * Returns `undefined` when the cache is disabled, the key is not found,
+   * or the cached entry has expired (TTL exceeded).
+   *
+   * @param key - The original prompt string (hashed internally).
+   * @returns The cached value, or `undefined` on miss.
+   */
   get(key: string): unknown | undefined {
     if (this.maxEntries === 0) return undefined;
     const entry = this.map.get(this.hash(key));
@@ -98,10 +99,18 @@ class PromptCache {
     }
     return entry.value;
   }
+
+  /**
+   * Stores a value in the cache under the given key.
+   * If the cache is at capacity, the oldest entry is evicted (LRU policy).
+   * Does nothing when the cache is disabled (`maxEntries === 0`).
+   *
+   * @param key - The original prompt string (hashed internally).
+   * @param value - The value to cache.
+   */
   set(key: string, value: unknown): void {
     if (this.maxEntries === 0) return;
     const h = this.hash(key);
-    // LRU eviction
     if (this.map.size >= this.maxEntries) {
       const firstKey = this.map.keys().next().value;
       if (firstKey) this.map.delete(firstKey);
@@ -110,6 +119,29 @@ class PromptCache {
   }
 }
 
+/**
+ * GlmEngine — production AI engine backed by the Zhipu GLM API via `z-ai-web-dev-sdk`.
+ *
+ * @implements {IGeminiClient}
+ *
+ * Architecture:
+ * - All five copilot operations build grounded prompts from live stadium
+ *   telemetry (gates, crowd metrics, incidents, parking) fetched from the
+ *   in-memory repository, ensuring responses are specific rather than generic.
+ * - The multimodal photo classification path sends validated `https://` photo
+ *   URLs to `chat.completions.createVision` and parses a structured JSON response.
+ * - All user-supplied text is sanitized via `sanitizePromptInput()` to prevent
+ *   prompt injection. Photo URLs are validated via `isValidPhotoUrl()` to
+ *   prevent SSRF attacks.
+ * - On ANY failure (network error, parse error, timeout > 3–8 s depending on
+ *   operation), the engine transparently falls back to `SimulatedGeminiEngine`
+ *   so the user never sees an error state.
+ *
+ * SDK configuration:
+ * - Credentials are read from `/etc/.z-ai-config` or `./.z-ai-config` by the SDK.
+ * - No environment-variable API key is required in the sandbox evaluation environment.
+ * - Set `ZAI_DISABLED=1` to force the simulated engine (demo/CI mode).
+ */
 export class GlmEngine implements IGeminiClient {
   public readonly engineName = 'gemini' as const; // kept for interface compat; UI label is "GLM 5.2"
   private zaiPromise: Promise<ZAI> | null = null;
@@ -129,7 +161,17 @@ export class GlmEngine implements IGeminiClient {
     return this.zaiPromise;
   }
 
-  // ----- Helper: build the live stadium context block -----
+  /**
+   * Fetches live telemetry from all stadium data sources in parallel and
+   * formats it into a structured plain-text context block for injection
+   * into every LLM system prompt.
+   *
+   * Including live data (gate wait times, crowd density, vendor queues,
+   * incident counts, parking availability) ensures GLM responses are
+   * grounded in real operational state rather than hallucinated generics.
+   *
+   * @returns A multi-line string containing the full stadium telemetry block.
+   */
   private async buildStadiumContext(): Promise<string> {
     const [gates, vendors, restrooms, parking, metrics, incidents, analytics] = await Promise.all([
       repository.getGates(),
