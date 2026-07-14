@@ -9,6 +9,22 @@ export default defineConfig({
     include: ['tests/**/*.test.{ts,tsx}'],
     globals: true,
     setupFiles: ['tests/setup.ts'],
+    /**
+     * Use a single forked worker process to avoid the Windows vitest-pool
+     * timeout bug that occurs when spawning multiple jsdom workers in parallel.
+     * This does not affect correctness — tests still run in isolated contexts.
+     */
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
+    /**
+     * Increase test timeout to 30 s to accommodate async AI engine tests that
+     * simulate real latency (e.g. SimulatedGeminiEngine adds 350–650 ms delays).
+     */
+    testTimeout: 30_000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary'],

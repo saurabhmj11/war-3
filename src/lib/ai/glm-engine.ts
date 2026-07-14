@@ -14,6 +14,7 @@ import {
 import { repository } from '@/lib/db/repository';
 import { SimulatedGeminiEngine } from './simulated-engine';
 import type { IGeminiClient } from './gemini-client';
+import { extractJson, withTimeout, sanitizePromptInput, isValidPhotoUrl } from './json-utils';
 
 const FALLBACK = new SimulatedGeminiEngine();
 
@@ -41,51 +42,8 @@ const LANGUAGE_NAMES: Record<LanguageCode, string> = {
   de: 'German',
 };
 
-/**
- * Wraps an async call with a hard timeout. If the call exceeds the budget,
- * we reject — the caller falls back to the deterministic simulated engine.
- */
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`[GLM] Timeout (${label}) after ${ms}ms`)), ms);
-    promise.then(
-      (v) => {
-        clearTimeout(timer);
-        resolve(v);
-      },
-      (e) => {
-        clearTimeout(timer);
-        reject(e);
-      }
-    );
-  });
-}
-
-/**
- * Extracts the JSON object from an LLM response that may include
- * ```json fenced blocks, leading prose, or trailing commentary.
- */
-function extractJson<T = unknown>(text: string): T | null {
-  if (!text) return null;
-  // Try fenced code block first.
-  const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  const candidate = fence ? fence[1] : text;
-  try {
-    return JSON.parse(candidate.trim()) as T;
-  } catch {
-    // Try to find the first { ... } block.
-    const start = candidate.indexOf('{');
-    const end = candidate.lastIndexOf('}');
-    if (start !== -1 && end !== -1 && end > start) {
-      try {
-        return JSON.parse(candidate.slice(start, end + 1)) as T;
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  }
-}
+// withTimeout, extractJson, sanitizePromptInput, and isValidPhotoUrl are
+// imported from './json-utils' — see that module for full JSDoc.
 
 /**
  * GlmEngine — calls the real Zhipu GLM API via z-ai-web-dev-sdk.
@@ -208,6 +166,18 @@ export class GlmEngine implements IGeminiClient {
   }
 
   // ---------- 1. FAN COPILOT ----------
+  /**
+   * Generates a contextual response for the Fan Copilot chatbot.
+   *
+   * Security: `message` is sanitized to prevent prompt injection before being
+   * embedded in the LLM prompt. History entries are similarly sanitized.
+   *
+   * @param message - The fan's raw question text.
+   * @param language - BCP 47 language code for the reply (default: `'en'`).
+   * @param history - Up to 6 recent conversation turns for context.
+   * @param _userLocation - Optional fan location hint (unused in v1).
+   * @returns A structured `FanCopilotResponseDTO` with navigation guidance.
+   */
   public async generateFanResponse(
     message: string,
     language: LanguageCode = 'en',
@@ -215,10 +185,16 @@ export class GlmEngine implements IGeminiClient {
     _userLocation?: string
   ): Promise<FanCopilotResponseDTO> {
     try {
+      // Sanitize user input to prevent prompt injection.
+      const safeMessage = sanitizePromptInput(message);
+
       const context = await this.buildStadiumContext();
       const langName = LANGUAGE_NAMES[language] ?? 'English';
       const historyBlock = history.length
-        ? history.slice(-6).map((t) => `${t.role.toUpperCase()}: ${t.content}`).join('\n')
+        ? history
+            .slice(-6)
+            .map((t) => `${t.role.toUpperCase()}: ${sanitizePromptInput(t.content)}`)
+            .join('\n')
         : '(no prior turns)';
 
       const systemPrompt = `You are the FIFA Smart Stadium Copilot for MetLife Stadium during the FIFA World Cup 2026. You help FANS with navigation, gate wait times, step-free accessible routing, finding food/restrooms, PARKING & TRANSPORTATION (commuter rail, parking lots, EV charging, shuttle connections), and sustainability tips.
@@ -237,7 +213,7 @@ Reply STRICTLY as a JSON object with these keys:
 
 Be grounded in the live telemetry above. If the fan asks about a gate, recommend the FASTEST gate from the data. If they need step-free access, prefer Gate D which has ELEVATOR_NORTH_1. If they ask about PARKING or TRANSPORTATION, reference the parking lots in the telemetry (including EV charging availability, shuttle connection to a specific gate, and lot status OPEN/NEAR_CAPACITY/FULL). If they ask about the commuter rail, note that Gate C is the rail hub and may be congested. Mention concrete numbers from the data. Output JSON only — no prose, no code fences.`;
 
-      const userPrompt = `Conversation so far:\n${historyBlock}\n\nFAN QUESTION: ${message}\n\nReply in ${langName}.`;
+      const userPrompt = `Conversation so far:\n${historyBlock}\n\nFAN QUESTION: ${safeMessage}\n\nReply in ${langName}.`;
       // Cache check — if we've answered this exact (model+system+user) prompt
       // in the last minute, return the cached GLM response without re-calling.
       const cacheKey = `${CHAT_MODEL}|${systemPrompt}|${userPrompt}`;
@@ -301,8 +277,22 @@ Be grounded in the live telemetry above. If the fan asks about a gate, recommend
   }
 
   // ---------- 2. WHAT-IF SIMULATION ----------
+  /**
+   * Projects the impact of an operational intervention on stadium congestion.
+   *
+   * Security: `scenario.description`, `targetGateId`, and `targetSector` are
+   * sanitized before being embedded in the reasoning prompt.
+   *
+   * @param scenario - The proposed operational scenario to evaluate.
+   * @returns A structured `WhatIfResultDTO` with projected metrics.
+   */
   public async runWhatIfSimulation(scenario: WhatIfScenarioDTO): Promise<WhatIfResultDTO> {
     try {
+      // Sanitize scenario fields to prevent prompt injection.
+      const safeDescription = sanitizePromptInput(scenario.description);
+      const safeGateId = sanitizePromptInput(scenario.targetGateId ?? 'n/a', 50);
+      const safeSector = sanitizePromptInput(scenario.targetSector ?? 'n/a', 50);
+
       const context = await this.buildStadiumContext();
       const systemPrompt = `You are the Operations What-If Simulation Engine for MetLife Stadium. Reason carefully across the live telemetry below to project the impact of the proposed operational intervention.
 
@@ -322,9 +312,9 @@ Be specific and grounded in the data. Output JSON only — no prose, no code fen
 
       const userPrompt = `PROPOSED INTERVENTION:
 - Type: ${scenario.interventionType}
-- Target gate: ${scenario.targetGateId ?? 'n/a'}
-- Target sector: ${scenario.targetSector ?? 'n/a'}
-- Description: ${scenario.description}
+- Target gate: ${safeGateId}
+- Target sector: ${safeSector}
+- Description: ${safeDescription}
 
 Return the structured JSON projection now.`;
 
@@ -373,8 +363,25 @@ Return the structured JSON projection now.`;
   }
 
   // ---------- 3. INCIDENT CLASSIFICATION (multimodal) ----------
+  /**
+   * Classifies an incident report using text and optionally a photo URL.
+   *
+   * Security:
+   * - `description` is sanitized to prevent prompt injection.
+   * - `photoUrl` is validated to be an `https://` URL before being forwarded
+   *   to the vision model (prevents SSRF via `file://` or `data:` schemes).
+   *   If the URL fails validation, classification proceeds text-only.
+   *
+   * @param description - Volunteer-supplied incident description text.
+   * @param photoUrl - Optional HTTPS URL of an incident photo.
+   * @returns A structured `IncidentClassificationDTO` with type and severity.
+   */
   public async classifyIncident(description: string, photoUrl?: string): Promise<IncidentClassificationDTO> {
     try {
+      // Sanitize text input and validate the photo URL.
+      const safeDescription = sanitizePromptInput(description);
+      const safePhotoUrl = isValidPhotoUrl(photoUrl) ? photoUrl : undefined;
+
       const context = await this.buildStadiumContext();
       const systemPrompt = `You are the Volunteer Incident Triage AI for MetLife Stadium. Analyze the following incident report and (if provided) the attached photo, then return a STRICT JSON classification.
 
@@ -399,8 +406,8 @@ Output JSON only — no prose, no code fences.`;
       const zai = await this.getClient();
 
       let completion: { choices?: Array<{ message?: { content?: string } }> };
-      if (photoUrl) {
-        // Multimodal: send the photo via createVision.
+      if (safePhotoUrl) {
+        // Multimodal: send the validated photo URL via createVision.
         completion = await withTimeout(
           zai.chat.completions.createVision({
             model: VISION_MODEL,
@@ -411,9 +418,9 @@ Output JSON only — no prose, no code fences.`;
                 content: [
                   {
                     type: 'text',
-                    text: `INCIDENT DESCRIPTION: ${description}\n\nAnalyze the attached photo and return the structured JSON classification now.`,
+                    text: `INCIDENT DESCRIPTION: ${safeDescription}\n\nAnalyze the attached photo and return the structured JSON classification now.`,
                   },
-                  { type: 'image_url', image_url: { url: photoUrl } },
+                  { type: 'image_url', image_url: { url: safePhotoUrl } },
                 ],
               },
             ],
@@ -423,13 +430,13 @@ Output JSON only — no prose, no code fences.`;
           'classifyIncident'
         );
       } else {
-        // Text-only classification.
+        // Text-only classification (or photo URL failed validation).
         completion = await withTimeout(
           zai.chat.completions.create({
             model: CHAT_MODEL,
             messages: [
               { role: 'system', content: systemPrompt },
-              { role: 'user', content: `INCIDENT DESCRIPTION: ${description}\n\nReturn the structured JSON classification now.` },
+              { role: 'user', content: `INCIDENT DESCRIPTION: ${safeDescription}\n\nReturn the structured JSON classification now.` },
             ],
             thinking: { type: 'disabled' },
             temperature: 0.2,
@@ -466,12 +473,29 @@ Output JSON only — no prose, no code fences.`;
   }
 
   // ---------- 4. EMERGENCY BROADCAST ----------
+  /**
+   * Generates multilingual emergency broadcast text across all 8 World Cup
+   * languages for a given English incident summary.
+   *
+   * Security: `incidentSummary` is sanitized to prevent prompt injection.
+   * Sector IDs are validated to be alphanumeric strings before inclusion.
+   *
+   * @param incidentSummary - English language incident summary text.
+   * @param targetSectors - List of stadium sector IDs to address.
+   * @returns An `EmergencyBroadcastDTO` with translations in all 8 languages.
+   */
   public async generateEmergencyBroadcast(
     incidentSummary: string,
     targetSectors: string[]
   ): Promise<EmergencyBroadcastDTO> {
     try {
-      const sectorsStr = targetSectors.length ? `Sectors ${targetSectors.join(', ')}` : 'all sectors';
+      // Sanitize the incident summary and validate sector IDs.
+      const safeSummary = sanitizePromptInput(incidentSummary);
+      // Allow only alphanumeric characters and dashes/underscores in sector IDs.
+      const safeSectors = targetSectors
+        .map((s) => s.replace(/[^a-zA-Z0-9_-]/g, ''))
+        .filter(Boolean);
+      const sectorsStr = safeSectors.length ? `Sectors ${safeSectors.join(', ')}` : 'all sectors';
       const langCodes: LanguageCode[] = ['en', 'es', 'fr', 'pt', 'ar', 'ja', 'hi', 'de'];
       const langList = langCodes.map((c) => `"${c}": string`).join(', ');
       const systemPrompt = `You are the Multilingual Emergency Broadcast AI for MetLife Stadium FIFA World Cup 2026. Translate the following English emergency directive into all 8 World Cup languages, keeping the tone calm, official, and concise. Each translation must be a single string (no markdown).
@@ -486,7 +510,7 @@ Reply STRICTLY as a JSON object with keys ${langList}. The "en" value should be 
           model: CHAT_MODEL,
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: `Original English directive:\n"${incidentSummary}"\n\nReturn the JSON object now.` },
+            { role: 'user', content: `Original English directive:\n"${safeSummary}"\n\nReturn the JSON object now.` },
           ],
           thinking: { type: 'disabled' },
           temperature: 0.2,

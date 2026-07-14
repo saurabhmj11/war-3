@@ -168,6 +168,7 @@ export default function HomePage() {
           {/* Engine status pill */}
           <div className="flex flex-wrap items-center justify-center gap-3">
             <span
+              aria-label={isGeminiLive ? 'AI engine: Live GLM 5.2 API connected' : 'AI engine: Simulated mode — set ZAI_DISABLED=0 for live GLM'}
               className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold border ${
                 isGeminiLive
                   ? 'bg-emerald-500/15 text-emerald-200 border-emerald-400/40'
@@ -179,7 +180,7 @@ export default function HomePage() {
             </span>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-[#0a1f15]/90 border border-emerald-900/60 text-emerald-200">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 live-pulse" aria-hidden="true" />
-              70,000 SPECTATORS IN-GAME
+              <span aria-label="70,000 spectators currently in-game">70,000 SPECTATORS IN-GAME</span>
             </span>
           </div>
 
@@ -210,16 +211,17 @@ export default function HomePage() {
             aria-label="Stadium telemetry snapshot"
           >
             {[
-              { numeric: 82500, prefix: '', suffix: '', label: 'MetLife Capacity', color: 'text-white', sub: 'EAST RUTHERFORD, NJ' },
-              { numeric: 70000, prefix: '', suffix: '', label: 'Live Ingress', color: 'text-emerald-400', sub: '84.8% CAPACITY' },
-              { numeric: 1.5, prefix: '< ', suffix: 's', decimals: 1, label: 'AI Latency', color: 'text-cyan-400', sub: 'P95 SLA MET' },
-              { numeric: 8, prefix: '', suffix: '', label: 'Languages', color: 'text-amber-400', sub: 'WORLD CUP CORE' },
+              { numeric: 82500, prefix: '', suffix: '', label: 'MetLife Capacity', color: 'text-white', sub: 'EAST RUTHERFORD, NJ', ariaValue: '82,500 seat capacity' },
+              { numeric: 70000, prefix: '', suffix: '', label: 'Live Ingress', color: 'text-emerald-400', sub: '84.8% CAPACITY', ariaValue: '70,000 spectators — 84.8% capacity' },
+              { numeric: 1.5, prefix: '< ', suffix: 's', decimals: 1, label: 'AI Latency', color: 'text-cyan-400', sub: 'P95 SLA MET', ariaValue: 'AI response latency under 1.5 seconds, P95 SLA met' },
+              { numeric: 8, prefix: '', suffix: '', label: 'Languages', color: 'text-amber-400', sub: 'WORLD CUP CORE', ariaValue: '8 World Cup languages supported' },
             ].map((stat, i) => (
-              <div
+              <figure
                 key={i}
                 className="card-floodlit floodlight-sweep rounded-lg p-4 text-center backdrop-blur-xl relative overflow-hidden"
+                aria-label={stat.ariaValue}
               >
-                <div className={`text-3xl sm:text-4xl font-black ${stat.color}`}>
+                <div className={`text-3xl sm:text-4xl font-black ${stat.color}`} aria-hidden="true">
                   <AnimatedCounter
                     value={stat.numeric}
                     prefix={stat.prefix}
@@ -228,11 +230,11 @@ export default function HomePage() {
                     duration={1600}
                   />
                 </div>
-                <div className="text-[10px] text-emerald-100/70 uppercase tracking-widest font-bold mt-1 jersey-heading">
+                <figcaption className="text-[10px] text-emerald-100/70 uppercase tracking-widest font-bold mt-1 jersey-heading">
                   {stat.label}
-                </div>
-                <div className="text-[9px] text-emerald-100/75 font-mono mt-0.5">{stat.sub}</div>
-              </div>
+                </figcaption>
+                <div className="text-[9px] text-emerald-100/75 font-mono mt-0.5" aria-hidden="true">{stat.sub}</div>
+              </figure>
             ))}
           </div>
         </div>
@@ -291,9 +293,11 @@ export default function HomePage() {
           {ROLE_CARDS.map((card) => {
             const Icon = card.icon;
             return (
-              <article
+                <article
                 key={card.role}
-                className={`relative card-floodlit floodlight-sweep card-lift rounded-xl p-6 shadow-2xl flex flex-col justify-between gap-5 bg-gradient-to-br ${KIT_BG[card.kit]}`}
+                aria-labelledby={`role-card-title-${card.role}`}
+                aria-describedby={`role-card-desc-${card.role}`}
+                className={`relative card-floodlit floodlight-sweep card-lift rounded-xl p-6 shadow-2xl flex flex-col justify-between gap-5 bg-linear-to-br ${KIT_BG[card.kit]}`}
               >
                 {/* Vertical kit stripe (jersey side panel) */}
                 <div className={`absolute top-0 left-0 bottom-0 w-1 rounded-l-xl ${KIT_STRIPE[card.kit]}`} aria-hidden="true" />
@@ -303,7 +307,10 @@ export default function HomePage() {
                     <div className="flex items-center gap-3">
                       {/* Jersey-number block */}
                       <div className="relative">
-                        <div className="w-14 h-14 rounded-md bg-[#03110a]/90 border border-white/10 flex items-center justify-center font-black text-2xl scoreboard-numeral text-white">
+                        <div
+                          className="w-14 h-14 rounded-md bg-[#03110a]/90 border border-white/10 flex items-center justify-center font-black text-2xl scoreboard-numeral text-white"
+                          aria-hidden="true"
+                        >
                           {card.number}
                         </div>
                         <div className={`absolute -bottom-1 -right-1 p-1 rounded-md bg-[#03110a] border border-white/10`}>
@@ -311,18 +318,18 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-md bg-[#03110a]/80 border border-white/10 tracking-widest text-emerald-100/70">
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-md bg-[#03110a]/80 border border-white/10 tracking-widest text-emerald-100/70" aria-hidden="true">
                       {card.badge}
                     </span>
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-emerald-100/50 font-mono">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-emerald-100/50 font-mono" aria-hidden="true">
                       {card.role} • POSITION
                     </div>
-                    <h3 className="jersey-heading text-xl font-black text-white mt-1">{card.title}</h3>
+                    <h3 id={`role-card-title-${card.role}`} className="jersey-heading text-xl font-black text-white mt-1">{card.title}</h3>
                     <div className="text-xs font-medium text-emerald-100/60 mt-0.5">{card.subtitle}</div>
                   </div>
-                  <p className="text-xs text-emerald-50/80 leading-relaxed">{card.description}</p>
+                  <p id={`role-card-desc-${card.role}`} className="text-xs text-emerald-50/80 leading-relaxed">{card.description}</p>
                 </div>
 
                 <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-3 pl-2">
@@ -337,7 +344,8 @@ export default function HomePage() {
                   <Link
                     href={card.href}
                     onClick={() => switchRole(card.role)}
-                    className={`flex-1 py-2 px-4 rounded-md bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-[#03110a] text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-1.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400`}
+                    aria-label={`Switch to ${card.role} role and enter ${card.title} dashboard`}
+                    className={`flex-1 py-2 px-4 rounded-md bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-[#03110a] text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-1.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400`}
                   >
                     <span>Enter Pitch</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
@@ -383,7 +391,7 @@ export default function HomePage() {
             ].map((item) => (
               <div key={item.title} className="bg-[#03110a]/80 p-5 rounded-lg border border-emerald-900/40 space-y-2 hover:border-emerald-700/60 transition-colors">
                 <CheckCircle2 className={`w-5 h-5 ${item.color}`} aria-hidden="true" />
-                <div className="font-black text-white text-sm jersey-heading">{item.title}</div>
+                <h3 className="font-black text-white text-sm jersey-heading">{item.title}</h3>
                 <p className="text-xs text-emerald-50/60">{item.body}</p>
               </div>
             ))}

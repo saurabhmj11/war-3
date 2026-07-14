@@ -11,6 +11,17 @@ import {
 } from '@/domain/types';
 import { repository } from '@/lib/db/repository';
 
+/**
+ * IGeminiClient — the abstract interface every AI engine must satisfy.
+ *
+ * NOTE: This interface is intentionally declared here (in simulated-engine.ts)
+ * rather than imported from gemini-client.ts to avoid a circular dependency:
+ *   simulated-engine.ts ← gemini-client.ts ← glm-engine.ts
+ *                       ← simulated-engine.ts  (would be circular)
+ *
+ * The authoritative copy is `IGeminiClient` in `gemini-client.ts`. If you
+ * modify this interface, update the copy in gemini-client.ts identically.
+ */
 export interface IGeminiClient {
   readonly engineName: 'gemini' | 'simulated';
   generateFanResponse(
@@ -27,6 +38,8 @@ export interface IGeminiClient {
   ): Promise<EmergencyBroadcastDTO>;
   generateOperationsSummary(): Promise<OperationsSummaryDTO>;
 }
+
+
 
 /**
  * SimulatedGeminiEngine — keyword-matching deterministic fallback that keeps
